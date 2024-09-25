@@ -1,8 +1,9 @@
 import React from "react";
 
-import { Room } from "@/app/room";
-import { Canvas } from "./_components/canvas";
 import { Loading } from "@/components/common/loading";
+
+import { Canvas } from "@/app/design/[designId]/_components/canvas";
+import { Room } from "@/app/design/room";
 
 interface DesignIdPageProps {
   params: {

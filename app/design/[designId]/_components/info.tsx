@@ -1,6 +1,7 @@
 "use client";
 
 import { Actions } from "@/components/common/actions";
+import TextLogo from "@/components/common/text-logo";
 import { Button } from "@/components/ui/button";
 import { Hint } from "@/components/ui/hint";
 import { Menu } from "lucide-react";
@@ -10,6 +11,7 @@ import Link from "next/link";
 interface InfoProps {
   designId: string;
 }
+
 const TabSaperator = () => {
   return <div className="flex items-center px-1.5 text-slate-300">|</div>;
 };
@@ -17,21 +19,18 @@ const TabSaperator = () => {
 export const Info = ({ designId }: InfoProps) => {
   return (
     <div className="absolute left-2 top-2 flex h-14 rounded-md bg-white px-2 py-1.5 shadow-md">
-      <Hint label="대시보드로 돌아가기" side="bottom" sideOffset={10}>
+      <Hint label="디자인 대시보드로 돌아가기" side="bottom" sideOffset={10}>
         <Link
-          href="/"
+          href="/dashboard"
           className="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-secondary/80"
         >
           <Image
-            src="/logos/main_logo.png"
+            src="/logos/main-logo.png"
             alt="메인 로고"
-            width={45}
+            width={58}
             height={0}
           />
-          <span className="font-extrabold tracking-wide text-zinc-800">
-            PERSONALI-
-            <span className="text-violet-800">T</span>
-          </span>
+          <TextLogo />
         </Link>
       </Hint>
       <TabSaperator />

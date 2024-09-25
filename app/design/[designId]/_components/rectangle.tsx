@@ -35,8 +35,8 @@ export const Rectangle = ({
         width={width}
         height={height}
         strokeWidth={1}
-        fill={"#FFF"}
-        stroke="transparent"
+        fill={"#e5e5e5"}
+        stroke={selectionColor || "transparent"}
       />
     </>
   );

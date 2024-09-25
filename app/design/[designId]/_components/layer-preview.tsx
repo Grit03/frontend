@@ -2,8 +2,9 @@
 
 import React, { memo } from "react";
 import { LayerType } from "@/types/canvas";
-import { useStorage } from "@liveblocks/react";
+import { useStorage } from "@liveblocks/react/suspense";
 import { Rectangle } from "./rectangle";
+import { Text } from "./text";
 
 interface LayerPreviewProps {
   id: string;
@@ -27,7 +28,9 @@ export const LayerPreview = memo(
       case LayerType.AiImage:
         return null;
       case LayerType.Text:
-        return null;
+        return (
+          <Text id={id} layer={layer} onPointerDown={onLayerPointerDown} />
+        );
       default:
         console.log("잘못된 디자인 요소입니다");
         return null;

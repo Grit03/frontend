@@ -40,6 +40,7 @@ export type TextLayer = {
   height: number;
   width: number;
   fill: Color;
+  value: string;
 };
 
 export type Point = {
