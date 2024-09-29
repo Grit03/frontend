@@ -9,11 +9,10 @@ import { Text } from "./text";
 interface LayerPreviewProps {
   id: string;
   onLayerPointerDown: (e: React.PointerEvent, layerId: string) => void;
-  selectionColor?: string;
 }
 
 export const LayerPreview = memo(
-  ({ id, onLayerPointerDown, selectionColor }: LayerPreviewProps) => {
+  ({ id, onLayerPointerDown }: LayerPreviewProps) => {
     const layer = useStorage((root) => root.layers.get(id));
 
     if (!layer) {

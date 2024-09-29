@@ -1,11 +1,12 @@
+"use client";
 import ContentEditable, { ContentEditableEvent } from "react-contenteditable";
 
 import { cn, colorToCss } from "@/lib/utils";
 import { LayerType, TextLayer } from "@/types/canvas";
 import { useMutation } from "@liveblocks/react/suspense";
-import { PointerEvent } from "react";
+import { PointerEvent, useEffect, useRef } from "react";
 import { LiveObject } from "@liveblocks/client";
-import font from "next/font/google";
+import { fonts } from "@/constants/text-related";
 
 interface TextProps {
   id: string;
@@ -16,7 +17,7 @@ interface TextProps {
 
 const calculateFontSize = (width: number, height: number) => {
   const maxFontSize = 96;
-  const scaleFactor = 0.25;
+  const scaleFactor = 0.4;
 
   const fontSizeBasedOnHeight = height * scaleFactor;
   const fontSizeBaseOnWidth = width * scaleFactor;
@@ -30,7 +31,15 @@ export const Text = ({
   id,
   selectionColor,
 }: TextProps) => {
-  const { x, y, width, height, fill, value } = layer;
+  const { x, y, width, height, fill, value, font } = layer;
+
+  const textRef = useRef<HTMLDivElement | null>(null);
+
+  // useEffect(() => {
+  //   if (textRef.current) {
+  //     updateHeight(textRef.current?.clientHeight);
+  //   }
+  // }, [textRef.current?.clientHeight]);
 
   const updateValue = useMutation(({ storage }, newValue: string) => {
     const liveLayers = storage.get("layers");
@@ -41,6 +50,28 @@ export const Text = ({
       textLayer.set("value", newValue);
     }
   }, []);
+
+  // 글자 작성에 따른 높이 업데이트
+  // const updateHeight = useMutation(({ storage }, newHeight: number) => {
+  //   const liveLayers = storage.get("layers");
+  //   const layer = liveLayers.get(id);
+
+  //   if (layer && layer.toObject().type === LayerType.Text) {
+  //     const textLayer = layer as LiveObject<TextLayer>;
+  //     textLayer.set("height", newHeight);
+  //   }
+  // }, []);
+
+  // 글자 작성에 따른 너비 업데이트
+  // const updateWidth = useMutation(({ storage }, newWidth: number) => {
+  //   const liveLayers = storage.get("layers");
+  //   const layer = liveLayers.get(id);
+
+  //   if (layer && layer.toObject().type === LayerType.Text) {
+  //     const textLayer = layer as LiveObject<TextLayer>;
+  //     textLayer.set("width", newWidth);
+  //   }
+  // }, []);
 
   const handleContentChange = (e: ContentEditableEvent) => {
     updateValue(e.target.value);
@@ -55,13 +86,17 @@ export const Text = ({
       onPointerDown={(e) => onPointerDown(e, id)}
     >
       <ContentEditable
-        className="apply-font flex h-full w-full items-center justify-center text-center outline-none"
+        className={cn(
+          "apply-font flex min-h-full min-w-full items-center justify-center break-all outline-none",
+          fonts[font as keyof typeof fonts].font.className,
+        )}
+        // innerRef={textRef}
         onChange={handleContentChange}
         style={{
           fontSize: calculateFontSize(width, height),
-          color: fill ? colorToCss(fill) : "white",
+          color: fill,
         }}
-        html={value || "글자를 입력하세요"}
+        html={value || "Text"}
       />
     </foreignObject>
   );

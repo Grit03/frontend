@@ -20,7 +20,7 @@ const ShantellSans = Shantell_Sans({
 
 export default function Home() {
   return (
-    <div className="pt-[74px]">
+    <div className="pt-[64px]">
       <Header />
       {/* 타이틀 섹션 */}
       <section className="flex h-svh w-full select-none flex-col items-center justify-center text-balance break-keep bg-slate-950 px-4 text-white">
@@ -48,7 +48,7 @@ export default function Home() {
           </Button>
         </Link>
 
-        <div className="relative w-1/3">
+        <div className="relative w-1/3 animate-floating">
           <Image
             src="/images/main-image-crop.png"
             alt="메인 설명 이미지"

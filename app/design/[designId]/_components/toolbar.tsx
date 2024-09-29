@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Toolbutton } from "./tool-button";
 import {
   ImagePlus,
@@ -29,16 +29,16 @@ export const Toolbar = ({
 }: ToolbarProps) => {
   // const [imageSrc, setImageSrc] = useState<string | null>(null);
 
-  // const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   if (event.target.files && event.target.files.length > 0) {
-  //     const file = event.target.files[0];
-  //     const reader = new FileReader();
-  //     reader.onloadend = () => {
-  //       setImageSrc(reader.result as string);
-  //     };
-  //     reader.readAsDataURL(file);
-  //   }
-  // };
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      // reader.onloadend = () => {
+      //   setImageSrc(reader.result as string);
+      // };
+      // reader.readAsDataURL(file);
+    }
+  };
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const handleButtonClick = () => {
@@ -76,17 +76,17 @@ export const Toolbar = ({
             canvasState.layerType === LayerType.Text
           }
         />
-        {/* <input
+        <input
           type="file"
           onChange={handleFileChange}
           className="hidden"
           ref={fileInputRef}
-        /> */}
+        />
         <Toolbutton
           label="이미지 추가"
           icon={ImagePlus}
           onClick={() => {
-            // handleButtonClick();
+            handleButtonClick();
             setCanvasState({
               mode: CanvasMode.Inserting,
               layerType: LayerType.Image,
@@ -102,13 +102,13 @@ export const Toolbar = ({
           icon={WandSparkles}
           onClick={() =>
             setCanvasState({
-              mode: CanvasMode.Inserting,
-              layerType: LayerType.AiImage,
+              mode: CanvasMode.Generating,
             })
           }
           isActive={
-            canvasState.mode === CanvasMode.Inserting &&
-            canvasState.layerType === LayerType.AiImage
+            canvasState.mode === CanvasMode.Generating ||
+            (canvasState.mode === CanvasMode.Inserting &&
+              canvasState.layerType === LayerType.AiImage)
           }
         />
       </div>

@@ -8,7 +8,7 @@ export default function Header() {
     <header className="fixed inset-x-0 top-0 z-30 bg-white">
       <nav
         aria-label="Global"
-        className="flex items-center justify-between px-8 py-2.5"
+        className="flex items-center justify-between px-7 py-2"
       >
         <Link href="/" className="flex items-center justify-center space-x-2">
           <span className="sr-only">PERSONALIT</span>
@@ -18,7 +18,7 @@ export default function Header() {
             priority
             width={60}
             height={40}
-            className="h-14 w-auto select-none"
+            className="h-12 w-auto select-none"
           />
           <TextLogo />
         </Link>

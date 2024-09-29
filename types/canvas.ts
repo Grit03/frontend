@@ -1,10 +1,10 @@
 import { LargeNumberLike } from "crypto";
 
-export type Color = {
-  r: number;
-  g: number;
-  b: number;
-};
+// export type Color = {
+//   r: number;
+//   g: number;
+//   b: number;
+// };
 
 export type Camera = {
   x: number;
@@ -39,8 +39,9 @@ export type TextLayer = {
   y: number;
   height: number;
   width: number;
-  fill: Color;
+  fill: string;
   value: string;
+  font: string;
 };
 
 export type Point = {

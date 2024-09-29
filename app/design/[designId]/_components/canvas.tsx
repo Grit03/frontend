@@ -6,7 +6,6 @@ import {
   Camera,
   CanvasMode,
   CanvasState,
-  Color,
   Cursor,
   LayerType,
   Point,
@@ -28,12 +27,13 @@ import {
   useStorage,
   useMutation,
 } from "@liveblocks/react/suspense";
-import { CursorsPresence } from "./cursors-presence";
 import { LiveObject } from "@liveblocks/client";
 import { LayerPreview } from "./layer-preview";
 import { SelectionBox } from "./selection-box";
 import { SelectionTools } from "./selection-tools";
 import useDeleteLayers from "@/hooks/use-delete-layers";
+import SideBar from "./(sidebar)/sidebar";
+import useRecentTextSetting from "@/store/text-store";
 
 const MAX_LAYERS = 100;
 
@@ -42,6 +42,9 @@ interface CanvasProps {
 }
 
 export const Canvas = ({ designId }: CanvasProps) => {
+  // 최근 폰트 설정
+  const { fontStyle, usedFill, updateFont } = useRecentTextSetting();
+
   // 캔버스 모드
   const [canvasState, setCanvasState] = useState<CanvasState>({
     mode: CanvasMode.None,
@@ -60,12 +63,6 @@ export const Canvas = ({ designId }: CanvasProps) => {
 
   // layer 요소 id
   const layerIds = useStorage((root) => root.layerIds);
-  // 최근 사용 color
-  const [lastUsedColor, setLastUsedColor] = useState<Color>({
-    r: 0,
-    g: 0,
-    b: 0,
-  });
 
   const deleteLayers = useDeleteLayers();
 
@@ -75,13 +72,17 @@ export const Canvas = ({ designId }: CanvasProps) => {
       { storage, setMyPresence },
       layerType: LayerType.AiImage | LayerType.Image | LayerType.Text,
       position: Point,
+      fontStyle: string,
     ) => {
+      console.log("useMutation: ", fontStyle);
       const liveLayers = storage.get("layers");
       if (liveLayers.size >= MAX_LAYERS) return;
 
       const liveLayerIds = storage.get("layerIds");
       const layerId = nanoid();
       let layer = null;
+
+      // console.log("인서트 시 폰트 : ", font);
       if (layerType === LayerType.Text) {
         layer = new LiveObject({
           type: layerType,
@@ -89,8 +90,9 @@ export const Canvas = ({ designId }: CanvasProps) => {
           y: position.y,
           height: 100,
           width: 100,
-          fill: lastUsedColor,
-          value: "",
+          fill: usedFill,
+          value: "Text",
+          font: fontStyle,
         });
       } else {
         layer = new LiveObject({
@@ -107,7 +109,7 @@ export const Canvas = ({ designId }: CanvasProps) => {
       setMyPresence({ selection: [layerId] }, { addToHistory: true });
       setCanvasState({ mode: CanvasMode.None });
     },
-    [lastUsedColor],
+    [],
   );
 
   // 단축키
@@ -115,7 +117,7 @@ export const Canvas = ({ designId }: CanvasProps) => {
     function onKeyDown(e: KeyboardEvent) {
       switch (e.key) {
         case "Backspace": {
-          deleteLayers();
+          // deleteLayers();
           break;
         }
         case "z": {
@@ -272,27 +274,6 @@ export const Canvas = ({ designId }: CanvasProps) => {
     [history],
   );
 
-  // pointer를 움직일 때
-  // const onPointerMove = (e: React.PointerEvent) => {
-  //   e.preventDefault();
-
-  //   // 현재 커서 위치
-  //   const current = pointerEventToCanvasPoint(e, camera);
-
-  //   if (canvasState.mode === CanvasMode.Pressing) {
-  //     startMultiSelection(current, canvasState.origin);
-  //   } else if (canvasState.mode === CanvasMode.SelectionNet) {
-  //     updateSelectionNet(current, canvasState.origin);
-  //   } else if (canvasState.mode === CanvasMode.Translating) {
-  //     translateSelectedLayers(current);
-  //   } else if (canvasState.mode === CanvasMode.Resizing) {
-  //     resizeSelectedLayer(current);
-  //   }
-
-  //   setCursor(current);
-  //   // console.log(cursor);
-  // };
-
   const onPointerMove = useMutation(
     ({}, e: React.PointerEvent) => {
       e.preventDefault();
@@ -329,7 +310,9 @@ export const Canvas = ({ designId }: CanvasProps) => {
     (e: React.PointerEvent) => {
       const point = pointerEventToCanvasPoint(e, camera);
 
-      if (canvasState.mode === CanvasMode.Inserting) return;
+      if (canvasState.mode === CanvasMode.Inserting) {
+        return;
+      }
 
       setCanvasState({ origin: point, mode: CanvasMode.Pressing });
     },
@@ -348,7 +331,7 @@ export const Canvas = ({ designId }: CanvasProps) => {
         unselectLayers();
         setCanvasState({ mode: CanvasMode.None });
       } else if (canvasState.mode === CanvasMode.Inserting) {
-        insertLayer(canvasState.layerType, point);
+        insertLayer(canvasState.layerType, point, fontStyle);
       } else {
         setCanvasState({ mode: CanvasMode.None });
       }
@@ -357,15 +340,6 @@ export const Canvas = ({ designId }: CanvasProps) => {
     },
     [camera, canvasState, history, insertLayer, unselectLayers],
   );
-
-  // const [images, setImage] = useState(new window.Image());
-  // useEffect(() => {
-  //   const MyImage = new window.Image();
-  //   MyImage.src = "/t-shirt-mockup-front.png";
-  //   MyImage.onload = () => {
-  //     setImage(MyImage);
-  //   };
-  // }, []);
 
   return (
     <main className="relative h-full w-full touch-none overflow-hidden bg-neutral-100">
@@ -378,9 +352,8 @@ export const Canvas = ({ designId }: CanvasProps) => {
         undo={history.undo}
         redo={history.redo}
       />
-      <div className="absolute bottom-2 right-2 top-2 w-[250px] rounded-md bg-white px-2 py-1.5 shadow-md">
-        
-      </div>
+      <SideBar canvasState={canvasState} />
+
       <SelectionTools camera={camera} />
       <svg
         className="h-[100vh] w-[100vw]"
