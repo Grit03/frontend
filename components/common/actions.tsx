@@ -64,7 +64,7 @@ export const Actions = ({
             className="w-full cursor-pointer justify-start p-3 text-sm font-medium font-normal"
           >
             <Trash2 className="mr-2 h-4 w-4" />
-            보드 삭제
+            티셔츠 캔버스 삭제
           </Button>
         </ConfirmModal>
       </DropdownMenuContent>

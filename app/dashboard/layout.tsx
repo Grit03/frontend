@@ -36,13 +36,17 @@ export default function DashBoardLayout({
                 src="/images/dashboard/profile-placeholder.png"
                 width={56}
                 height={56}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover opacity-80 transition group-hover:opacity-70"
               />
             </div>
 
             <div className="flex grow flex-col justify-center leading-5">
-              <div className="mt-1 font-semibold">사용자 이름</div>
-              <div className="text-sm text-zinc-400">계정 아이디</div>
+              <div className="mt-1 font-semibold transition group-hover:text-indigo-600">
+                사용자 이름
+              </div>
+              <div className="text-sm text-zinc-400 transition group-hover:text-indigo-400">
+                계정 아이디
+              </div>
             </div>
           </div>
         </ProfileActions>
