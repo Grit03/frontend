@@ -19,9 +19,9 @@ export function pointerEventToCanvasPoint(
 }
 
 // rgb color 객체 값을 css string으로 바꾸는 함수
-export function colorToCss(color: Color) {
-  return `#${color.r.toString(16).padStart(2, "0")}${color.g.toString(16).padStart(2, "0")}${color.b.toString(16).padStart(2, "0")}`;
-}
+// export function colorToCss(color: Color) {
+//   return `#${color.r.toString(16).padStart(2, "0")}${color.g.toString(16).padStart(2, "0")}${color.b.toString(16).padStart(2, "0")}`;
+// }
 
 // resize 된 경계를 다시 계산하는 함수
 export function resizeBounds(bounds: XYWH, corner: Side, point: Point) {
