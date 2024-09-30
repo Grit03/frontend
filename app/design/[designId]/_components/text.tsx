@@ -1,10 +1,10 @@
 "use client";
 import ContentEditable, { ContentEditableEvent } from "react-contenteditable";
 
-import { cn, colorToCss } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { LayerType, TextLayer } from "@/types/canvas";
 import { useMutation } from "@liveblocks/react/suspense";
-import { PointerEvent, useEffect, useRef } from "react";
+import { PointerEvent, useRef } from "react";
 import { LiveObject } from "@liveblocks/client";
 import { fonts } from "@/constants/text-related";
 
