@@ -23,6 +23,9 @@ const buttonVariants = cva(
         designActive: "bg-indigo-600/10 text-indigo-600",
         action:
           "bg-indigo-700 text-primary-foreground shadow hover:bg-indigo-700/90",
+        danger:
+          "text-red-600 hover:text-red-500 transition rounded-lg hover:bg-zinc-200/90",
+        check: "text-xs bg-indigo-600/10 text-indigo-500 hover:text-indigo-600",
       },
       size: {
         default: "h-9 px-4 py-2",

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "sonner";
+import QueryProvider from "@/components/common/query-provider";
 
 const pretendard = localFont({
   src: "./fonts/PretendardVariable.woff2",
@@ -24,7 +25,7 @@ export default function RootLayout({
     <html lang="ko" className={`${pretendard.variable}`}>
       <body className={pretendard.className}>
         <Toaster />
-        {children}
+        <QueryProvider>{children}</QueryProvider>
       </body>
     </html>
   );

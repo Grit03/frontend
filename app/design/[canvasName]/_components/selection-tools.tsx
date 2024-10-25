@@ -9,6 +9,7 @@ import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import useDeleteLayers from "@/hooks/use-delete-layers";
 import { RiSendBackward, RiBringForward } from "react-icons/ri";
+import { PiSelectionBackgroundDuotone } from "react-icons/pi";
 import Image from "next/image";
 
 interface SelectionToolsProps {
@@ -111,21 +112,11 @@ export const SelectionTools = memo(({ camera }: SelectionToolsProps) => {
       }}
     >
       {/* <ColorPicker onChange={setFill} /> */}
+
       <div className="mr-2 flex items-center border-r border-neutral-200 pr-2">
         <Hint label="배경 제거">
-          <Button onClick={moveToFront} variant="design" size="icon">
-            <Image
-              onMouseEnter={() => {
-                setIconColor("4f46e5");
-              }}
-              onMouseLeave={() => {
-                setIconColor("000000");
-              }}
-              src={`https://img.icons8.com/?size=200&id=99733&format=png&color=${iconColor}`}
-              alt="icon"
-              width={21}
-              height={21}
-            />
+          <Button onClick={() => {}} variant="design" size="icon">
+            <PiSelectionBackgroundDuotone className="text-2xl" />
           </Button>
         </Hint>
       </div>

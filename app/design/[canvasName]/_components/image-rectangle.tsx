@@ -17,16 +17,16 @@ interface RectangleProps {
 //   value?: string;
 // };
 
-export const Rectangle = ({
+export const ImageRectangle = ({
   id,
   layer,
   onPointerDown,
   selectionColor,
 }: RectangleProps) => {
-  const { x, y, width, height } = layer;
+  const { x, y, width, height, src } = layer;
   return (
     <>
-      <rect
+      <image
         className="border drop-shadow-md"
         onPointerDown={(e) => onPointerDown(e, id)}
         style={{ transform: `translate(${x}px, ${y}px)` }}
@@ -34,6 +34,7 @@ export const Rectangle = ({
         y={0}
         width={width}
         height={height}
+        href={src}
         strokeWidth={1}
         fill={"#e5e5e5"}
         stroke={selectionColor || "transparent"}

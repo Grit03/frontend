@@ -2,8 +2,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "../ui/button";
 import TextLogo from "./text-logo";
+import RegisterModal from "./register-modal";
+import LoginModal from "./login-modal";
+import { useCookies } from "react-cookie";
+import { cookies } from "next/headers";
 
 export default function Header() {
+  const token = cookies().get("accessToken")?.value;
+
   return (
     <header className="fixed inset-x-0 top-0 z-30 bg-white">
       <nav
@@ -22,8 +28,21 @@ export default function Header() {
           />
           <TextLogo />
         </Link>
+        {token ? (
+          <Link href="/dashboard">
+            <Button variant="action">내 대시보드</Button>
+          </Link>
+        ) : (
+          <div className="flex gap-2.5">
+            <LoginModal>
+              <Button variant="action">로그인</Button>
+            </LoginModal>
 
-        <Button variant="action">로그인</Button>
+            <RegisterModal>
+              <Button variant="designActive">회원가입</Button>
+            </RegisterModal>
+          </div>
+        )}
       </nav>
     </header>
   );

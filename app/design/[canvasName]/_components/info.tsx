@@ -9,14 +9,14 @@ import Image from "next/image";
 import Link from "next/link";
 
 interface InfoProps {
-  designId: string;
+  canvasName: string;
 }
 
 const TabSaperator = () => {
   return <div className="flex items-center px-1.5 text-slate-300">|</div>;
 };
 
-export const Info = ({ designId }: InfoProps) => {
+export const Info = ({ canvasName }: InfoProps) => {
   return (
     <div className="absolute left-2 top-2 flex h-14 rounded-md bg-white px-2 py-1.5 shadow-md">
       <Hint label="디자인 대시보드로 돌아가기" side="bottom" sideOffset={10}>
@@ -35,9 +35,9 @@ export const Info = ({ designId }: InfoProps) => {
       </Hint>
       <TabSaperator />
       {/* design 이름 */}
-      <div className="flex h-full items-center px-2 py-1.5">{designId}</div>
+      <div className="flex h-full items-center px-2 py-1.5">{canvasName}</div>
       <TabSaperator />
-      <Actions id={designId} title={""} side="bottom" sideOffset={10}>
+      <Actions canvasName={canvasName} title={""} side="bottom" sideOffset={10}>
         <div>
           <Hint label="메인 메뉴" side="bottom" sideOffset={10}>
             <Button

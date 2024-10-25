@@ -47,6 +47,14 @@ export const Toolbar = ({
     }
   };
 
+  const handleImgAddBtnClick = () => {
+    setCanvasState({
+      mode: CanvasMode.Inserting,
+      layerType: LayerType.Image,
+    });
+    // handleButtonClick();
+  };
+
   return (
     <div className="absolute left-2 top-[50%] z-50 flex -translate-y-[50%] flex-col gap-y-4">
       <div className="flex flex-col items-center gap-y-2 rounded-md bg-white p-1.5 shadow-md">
@@ -85,13 +93,7 @@ export const Toolbar = ({
         <Toolbutton
           label="이미지 추가"
           icon={ImagePlus}
-          onClick={() => {
-            handleButtonClick();
-            setCanvasState({
-              mode: CanvasMode.Inserting,
-              layerType: LayerType.Image,
-            });
-          }}
+          onClick={() => {}}
           isActive={
             canvasState.mode === CanvasMode.Inserting &&
             canvasState.layerType === LayerType.Image

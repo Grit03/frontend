@@ -3,7 +3,7 @@
 import React, { memo } from "react";
 import { LayerType } from "@/types/canvas";
 import { useStorage } from "@liveblocks/react/suspense";
-import { Rectangle } from "./rectangle";
+import { ImageRectangle } from "./image-rectangle";
 import { Text } from "./text";
 
 interface LayerPreviewProps {
@@ -22,7 +22,11 @@ export const LayerPreview = memo(
     switch (layer.type) {
       case LayerType.Image:
         return (
-          <Rectangle id={id} layer={layer} onPointerDown={onLayerPointerDown} />
+          <ImageRectangle
+            id={id}
+            layer={layer}
+            onPointerDown={onLayerPointerDown}
+          />
         );
       case LayerType.AiImage:
         return null;

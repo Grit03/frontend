@@ -21,6 +21,7 @@ export type ImageLayer = {
   type: LayerType.Image;
   x: number;
   y: number;
+  src: string;
   height: number;
   width: number;
 };

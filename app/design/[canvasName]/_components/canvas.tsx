@@ -38,10 +38,10 @@ import useRecentTextSetting from "@/store/text-store";
 const MAX_LAYERS = 100;
 
 interface CanvasProps {
-  designId: string;
+  canvasName: string;
 }
 
-export const Canvas = ({ designId }: CanvasProps) => {
+export const Canvas = ({ canvasName }: CanvasProps) => {
   // 최근 폰트 설정
   const { fontStyle, usedFill, updateFont } = useRecentTextSetting();
 
@@ -99,6 +99,7 @@ export const Canvas = ({ designId }: CanvasProps) => {
           type: layerType,
           x: position.x,
           y: position.y,
+          src: "",
           height: 100,
           width: 100,
         });
@@ -343,7 +344,7 @@ export const Canvas = ({ designId }: CanvasProps) => {
 
   return (
     <main className="relative h-full w-full touch-none overflow-hidden bg-neutral-100">
-      <Info designId={designId} />
+      <Info canvasName={canvasName} />
       <Toolbar
         canvasState={canvasState}
         setCanvasState={setCanvasState}

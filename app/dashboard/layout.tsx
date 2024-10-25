@@ -5,12 +5,18 @@ import Header from "@/components/common/header";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { ProfileActions } from "./_components/profile-actions";
+import { FaClipboardList } from "react-icons/fa";
 
 const navigation = [
   {
     icon: <FaTshirt />,
     text: "내 디자인",
     href: "/dashboard",
+  },
+  {
+    icon: <FaClipboardList />,
+    text: "주문 내역",
+    href: "/dashboard/invoice",
   },
   {
     icon: <IoIosSettings />,
@@ -26,7 +32,7 @@ export default function DashBoardLayout({
 }>) {
   return (
     <div className="flex h-full w-full overflow-hidden">
-      <nav className="flex h-full w-64 flex-col space-y-1.5 border border-indigo-100 px-2 py-6 shadow-lg">
+      <nav className="flex h-full w-64 min-w-64 flex-col space-y-1.5 border border-zinc-200/40 px-2 py-6 shadow">
         <ProfileActions>
           <div className="group mb-5 flex cursor-pointer gap-4 rounded-xl px-3 py-2 transition hover:bg-indigo-50">
             <div className="relative h-14 w-14 overflow-hidden rounded-full bg-gray-100">

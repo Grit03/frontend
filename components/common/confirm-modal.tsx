@@ -11,6 +11,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Loader2 } from "lucide-react";
+import { MouseEventHandler } from "react";
 
 interface ConfirmModalProps {
   children: React.ReactNode;
@@ -27,9 +29,11 @@ export const ConfirmModal = ({
   header,
   description,
 }: ConfirmModalProps) => {
-  const handleConfirm = () => {
+  const handleConfirm: MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault();
     onConfirm();
   };
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
@@ -39,8 +43,9 @@ export const ConfirmModal = ({
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>취소</AlertDialogCancel>
+          <AlertDialogCancel disabled={disabled}>취소</AlertDialogCancel>
           <AlertDialogAction disabled={disabled} onClick={handleConfirm}>
+            {disabled && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             확인
           </AlertDialogAction>
         </AlertDialogFooter>

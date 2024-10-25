@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 export default function ProfilePage() {
   return (
     <>
-      <h1 className="text-4xl font-bold">내 정보</h1>
+      <h1 className="py-2 text-4xl font-bold">내 정보</h1>
       <div className="flex h-full flex-col py-7">
         {/* 프로필 이미지 */}
         <div className="group mb-5 flex cursor-pointer gap-4 rounded-xl py-2 transition">

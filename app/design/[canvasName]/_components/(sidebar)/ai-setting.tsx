@@ -7,9 +7,20 @@ import { WandSparkles } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Controller, useForm } from "react-hook-form";
 import { GiCardRandom } from "react-icons/gi";
+import { postImageGenerating } from "@/services/design-sidebar/ai-setting";
 
-interface PromptInputs {
-  designStyle: string;
+export interface PromptInputs {
+  designStyle:
+    | "none"
+    | "line-art-style"
+    | "vintage-style"
+    | "graffiti-style"
+    | "pop-art-style"
+    | "geometric-style"
+    | "hand-drawn-style"
+    | "3D-style"
+    | "collage-style"
+    | "watercolor-style";
   prompt: string;
 }
 
@@ -18,6 +29,7 @@ interface StyleSelectorProps {
   value: string;
 }
 
+// 스타일 리스트
 const styleList = [
   {
     type: "none",
@@ -28,60 +40,60 @@ const styleList = [
   {
     type: "line-art-style",
     name: "라인 아트",
-    value: "line-art",
+    value: "line-art-style",
     description:
       "손으로 그은 듯한 선으로 이미지를 표현하며, 심플한 디자인을 생성합니다",
   },
   {
     type: "vintage-style",
     name: "빈티지",
-    value: "vintage",
+    value: "vintage-style",
     description:
       "과거의 포스터 스타일을 재해석하여 클래식한 디자인을 생성합니다",
   },
   {
     type: "graffiti-style",
     name: "그래피티",
-    value: "graffiti",
+    value: "graffiti-style",
     description: "대담한 색상과 패턴으로 자유롭고 스트리트 감성을 표현합니다",
   },
   {
     type: "pop-art-style",
     name: "팝 아트",
-    value: "pop-art",
+    value: "pop-art-style",
     description:
       "대중문화 아이콘과 강렬한 색채를 사용해 시각적으로 강렬한 디자인을 만듭니다",
   },
   {
     type: "geometric-style",
     name: "기하학",
-    value: "geometric",
+    value: "geometric-style",
     description: "기하학적 도형을 반복적으로 사용해 세련된 디자인을 만듭니다",
   },
   {
     type: "hand-drawn-style",
     name: "손그림",
-    value: "hand-drawn",
+    value: "hand-drawn-style",
     description: "손으로 그린 듯한 그림을 연상하는 디자인을 생성합니다",
   },
   {
     type: "3D-style",
     name: "3D",
-    value: "3D",
+    value: "3D-style",
     description:
       "입체감있고 게임 요소, 3D 아이콘 같은 디자인 요소를 생성합니다",
   },
   {
     type: "collage-style",
     name: "콜라주",
-    value: "collage",
+    value: "collage-style",
     description:
       "신문지, 빈티지한 물건 등 다양한 오브젝트를 조합해 창의적이고 독창적인 패턴을 만듭니다",
   },
   {
     type: "watercolor-style",
     name: "수채화",
-    value: "watercolor",
+    value: "watercolor-style",
     description:
       "부드럽고 따뜻한 색상을 사용하고, 물감 느낌을 강조하며 수채화 디자인을 생성합니다",
   },
@@ -100,8 +112,9 @@ export default function AiSetting() {
     },
   });
 
-  const onSubmit = () => {
-    console.log("제출");
+  const onSubmit = async ({ designStyle, prompt }: PromptInputs) => {
+    const formData = { clothesName: "", imageId: "", designStyle, prompt };
+    const res = await postImageGenerating(formData);
   };
 
   return (

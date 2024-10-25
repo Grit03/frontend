@@ -17,7 +17,7 @@ interface ActionsProps {
   children: React.ReactNode;
   side?: DropdownMenuContentProps["side"];
   sideOffset?: DropdownMenuContentProps["sideOffset"];
-  id: string;
+  canvasName: string;
   title: string;
 }
 
@@ -25,12 +25,12 @@ export const Actions = ({
   children,
   side,
   sideOffset,
-  id,
+  canvasName,
   title,
 }: ActionsProps) => {
   const onCopyLink = () => {
     navigator.clipboard
-      .writeText(`${window.location.origin}/design/${id}`)
+      .writeText(`${window.location.origin}/design/${canvasName}`)
       .then(() => toast.success("링크 복사 완료!"))
       .catch(() => toast.error("링크 복사 실패"));
   };
