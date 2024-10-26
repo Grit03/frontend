@@ -9,6 +9,7 @@ import { getDesignCanvas } from "@/services/canvas/canvas-crud";
 import NotFound from "@/app/not-found";
 import { CanvasData } from "@/types/data";
 import { useQuery } from "@tanstack/react-query";
+import { useCookies } from "react-cookie";
 
 interface DesignIdPageProps {
   params: {
@@ -17,9 +18,10 @@ interface DesignIdPageProps {
 }
 
 const DesignIdPage = ({ params }: DesignIdPageProps) => {
+  const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
   const { data, error, isLoading } = useQuery({
     queryKey: ["canvas", params.canvasName],
-    queryFn: () => getDesignCanvas(params.canvasName),
+    queryFn: () => getDesignCanvas(params.canvasName, cookies.accessToken),
   });
   // const [canvasData, setCanvasData] = useState<CanvasData | null>(null);
   // useEffect(() => {

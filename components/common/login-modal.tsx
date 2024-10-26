@@ -21,6 +21,7 @@ import { IoEye, IoEyeOff } from "react-icons/io5";
 import { toast } from "sonner";
 import { useCookies } from "react-cookie";
 import { Loader2 } from "lucide-react";
+import useUserStore from "@/store/user-store";
 
 interface LoginModalProps {
   children: ReactNode;
@@ -50,10 +51,12 @@ function PasswordEyeBtn({ onOff, onClick }: PasswordEyeBtnProps) {
 export default function LoginModal({ children }: LoginModalProps) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { setUser, user } = useUserStore();
   const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
   const {
     register,
     handleSubmit,
+    setError,
     reset,
     formState: { errors },
   } = useForm<LoginFormData>();
@@ -66,16 +69,24 @@ export default function LoginModal({ children }: LoginModalProps) {
     const response = await postLogin(formData);
 
     if (response.success) {
-      const jwt = response.message;
-      setCookie("accessToken", jwt, {
+      const { accessToken, ...userInfo } = response.userInfo!;
+      setCookie("accessToken", accessToken, {
         path: "/",
         expires: new Date(new Date().getTime() + 30 * 60 * 1000),
       });
-      router.push("/");
+      setUser(userInfo);
+      router.push("/dashboard");
     } else {
-      toast.error(response.message);
+      if (response.errorType === "wrong") {
+        setError("root", {
+          type: "loginFail",
+          message: "아이디 혹은 비밀번호가 잘못되었습니다.",
+        });
+      } else {
+        toast.error(response.message);
+      }
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -139,8 +150,11 @@ export default function LoginModal({ children }: LoginModalProps) {
             {errors.password?.message}
           </div>
         </div>
+        <div className="h-6 pr-1 pt-1 text-xs text-rose-600">
+          {errors.root?.message}
+        </div>
 
-        <DialogFooter className="mt-4">
+        <DialogFooter>
           <Button
             variant="action"
             disabled={loading}

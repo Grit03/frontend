@@ -25,6 +25,8 @@ import { useMutation } from "@tanstack/react-query";
 import { queryClient } from "./query-provider";
 import { Loader2 } from "lucide-react";
 import { DialogClose } from "@radix-ui/react-dialog";
+import { useCookies } from "react-cookie";
+import { AxiosError } from "axios";
 
 interface NamingModalProps {
   children: ReactNode;
@@ -50,6 +52,7 @@ export default function NamingModal({
       clothesName: defaultValue,
     },
   });
+  const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
 
   const router = useRouter();
 
@@ -57,21 +60,26 @@ export default function NamingModal({
 
   // 캔버스 생성 mutation
   const mutationAfterCreation = useMutation({
-    mutationFn: (fromData: NameFormData) => postCreatingRoom(fromData),
+    mutationFn: (fromData: NameFormData) =>
+      postCreatingRoom(fromData, cookies.accessToken),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["AlldesignCanvas"] });
+      // await queryClient.invalidateQueries({ queryKey: ["AlldesignCanvas"] });
       router.push(`/design/${data.clothesName}`);
     },
     onError: (error) => {
-      toast.error("디자인 캔버스 생성에 실패했습니다");
+      const axiosError = error as AxiosError;
+      if (axiosError.status === 409)
+        toast.error("동일한 디자인 캔버스 이름이 있습니다.");
+      else toast.error("디자인 캔버스 생성에 실패했습니다");
     },
   });
 
   // 캔버스 이름 변경 mutation
   const mutationAfterRenaming = useMutation({
-    mutationFn: (fromData: RenameFormData) => putRenamingCanvas(fromData),
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["AlldesignCanvas"] });
+    mutationFn: (fromData: RenameFormData) =>
+      putRenamingCanvas(fromData, cookies.accessToken),
+    onSuccess: async (data) => {
+      await queryClient.invalidateQueries({ queryKey: ["AlldesignCanvas"] });
       if (closeRef.current) {
         closeRef.current.click();
       }
@@ -142,9 +150,12 @@ export default function NamingModal({
                 : mutationAfterRenaming.isPending
             }
             variant="action"
-            onClick={handleSubmit(
-              type === "create" ? onCreateCanvas : onRenameCanvas,
-            )}
+            onClick={(e) => {
+              e.preventDefault();
+              handleSubmit(
+                type === "create" ? onCreateCanvas : onRenameCanvas,
+              )();
+            }}
           >
             {(type === "create"
               ? mutationAfterCreation.isPending

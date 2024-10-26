@@ -4,11 +4,15 @@ import { Button } from "../ui/button";
 import TextLogo from "./text-logo";
 import RegisterModal from "./register-modal";
 import LoginModal from "./login-modal";
-import { useCookies } from "react-cookie";
+
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export default function Header() {
   const token = cookies().get("accessToken")?.value;
+  if (token) {
+    redirect("/dashboard");
+  }
 
   return (
     <header className="fixed inset-x-0 top-0 z-30 bg-white">
@@ -17,7 +21,7 @@ export default function Header() {
         className="flex items-center justify-between px-7 py-2"
       >
         <Link href="/" className="flex items-center justify-center space-x-2">
-          <span className="sr-only">PERSONALIT</span>
+          <span className="sr-only">Tindy</span>
           <Image
             src="/logos/main-logo.png"
             alt="메인 로고"
@@ -28,11 +32,8 @@ export default function Header() {
           />
           <TextLogo />
         </Link>
-        {token ? (
-          <Link href="/dashboard">
-            <Button variant="action">내 대시보드</Button>
-          </Link>
-        ) : (
+
+        {!token && (
           <div className="flex gap-2.5">
             <LoginModal>
               <Button variant="action">로그인</Button>
@@ -43,6 +44,24 @@ export default function Header() {
             </RegisterModal>
           </div>
         )}
+        {/* {token ? (
+          <div className="flex gap-2.5">
+            <Link href="/dashboard">
+              <Button variant="action">내 대시보드</Button>
+            </Link>
+            <LogoutBtn />
+          </div>
+        ) : (
+          <div className="flex gap-2.5">
+            <LoginModal>
+              <Button variant="action">로그인</Button>
+            </LoginModal>
+
+            <RegisterModal>
+              <Button variant="designActive">회원가입</Button>
+            </RegisterModal>
+          </div>
+        )} */}
       </nav>
     </header>
   );

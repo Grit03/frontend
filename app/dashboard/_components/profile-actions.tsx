@@ -8,6 +8,8 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { IoMdLogOut } from "react-icons/io";
+import { useCookies } from "react-cookie";
+import { useRouter } from "next/navigation";
 
 interface ActionsProps {
   children: React.ReactNode;
@@ -20,6 +22,15 @@ export const ProfileActions = ({
   side,
   sideOffset,
 }: ActionsProps) => {
+  const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
+
+  const router = useRouter();
+
+  const logout = () => {
+    removeCookie("accessToken");
+    router.push("/");
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
@@ -30,7 +41,7 @@ export const ProfileActions = ({
         className="w-56"
       >
         <DropdownMenuItem
-          onClick={() => {}}
+          onClick={logout}
           className="cursor-pointer px-3 py-2 font-medium"
         >
           <IoMdLogOut className="mr-3 text-xl" />

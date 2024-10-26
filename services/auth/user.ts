@@ -1,5 +1,6 @@
 import axios, { AxiosError } from "axios";
 import { axiosInstance } from "../axios-instance";
+import { UserInfo, UserInfoWithToken } from "@/types/user";
 
 export interface IdCheckForm {
   loginId: string;
@@ -24,7 +25,9 @@ interface RegisterResponse {
 
 interface LoginResponse {
   success: boolean;
-  message: string;
+  errorType?: "wrong" | "fail";
+  userInfo?: UserInfoWithToken;
+  message?: string;
 }
 
 export interface LoginFormData {
@@ -112,22 +115,36 @@ export const postLogin = async (
     const { data } = await axiosInstance.post("/user/login", formData);
     return {
       success: true,
-      message: data,
+      userInfo: data,
     };
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const axiosError = error as AxiosError<string>;
       if (axiosError.response && axiosError.response.status === 403) {
-        return { success: false, message: "로그인에 실패했습니다" };
+        return {
+          success: false,
+          errorType: "wrong",
+          message: "아이디 혹은 패스워드가 잘못되었습니다.",
+        };
       } else
         return {
           success: false,
+          errorType: "fail",
           message: "잘못된 요청입니다",
         };
     } else
       return {
         success: false,
+        errorType: "fail",
         message: "잘못된 요청입니다",
       };
   }
+};
+
+// 디자인 캔버스 조회
+export const getUserInfo = async (accessToken: string): Promise<UserInfo> => {
+  const { data } = await axiosInstance.get("/user/info", {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  return data;
 };

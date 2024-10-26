@@ -30,7 +30,7 @@ export default function Home() {
           className="my-4"
           style={{ textShadow: "#6366f1 -2px 2px 20px" }}
         />
-        <h2 className="mb-4 text-6xl font-bold text-indigo-50">
+        <h2 className="mb-4 text-center text-6xl font-bold text-indigo-50">
           <strong className="text-indigo-500">
             AI <HiMiniSparkles className="inline-block" />{" "}
           </strong>

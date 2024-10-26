@@ -34,6 +34,7 @@ import { SelectionTools } from "./selection-tools";
 import useDeleteLayers from "@/hooks/use-delete-layers";
 import SideBar from "./(sidebar)/sidebar";
 import useRecentTextSetting from "@/store/text-store";
+import { useWindowSize } from "@/hooks/use-window-size";
 
 const MAX_LAYERS = 100;
 
@@ -341,6 +342,7 @@ export const Canvas = ({ canvasName }: CanvasProps) => {
     },
     [camera, canvasState, history, insertLayer, unselectLayers],
   );
+  const { width, height } = useWindowSize();
 
   return (
     <main className="relative h-full w-full touch-none overflow-hidden bg-neutral-100">
@@ -368,6 +370,12 @@ export const Canvas = ({ canvasName }: CanvasProps) => {
             transform: `translate(${camera.x}px, ${camera.y}px)`,
           }}
         >
+          <image
+            href="/images/t-shirt/black.png"
+            height="1000"
+            width="1000"
+            className="h-full w-full"
+          />
           {layerIds?.map((layerId) => (
             <LayerPreview
               key={layerId}

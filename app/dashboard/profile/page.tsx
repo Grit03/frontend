@@ -1,9 +1,13 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import useUserStore from "@/store/user-store";
 
 export default function ProfilePage() {
+  const { user } = useUserStore();
   return (
     <>
       <h1 className="py-2 text-4xl font-bold">내 정보</h1>
@@ -20,26 +24,38 @@ export default function ProfilePage() {
               className="h-full w-full object-cover"
             />
           </div>
-          <div className="flex grow items-center gap-6 px-4">
+          {/* <div className="flex grow items-center gap-6 px-4">
             <Button variant="action">사진 바꾸기</Button>
             <Button variant="secondary">제거</Button>
-          </div>
+          </div> */}
         </div>
         <div className="flex grow flex-col gap-6">
           {/* 사용자 이름 */}
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label htmlFor="username">사용자 이름</Label>
-            <Input id="username" placeholder="사용자 이름" />
+            <Input
+              id="username"
+              placeholder="사용자 이름"
+              disabled={true}
+              defaultValue={user?.userName}
+            />
           </div>
-          {/* 계정 이메일 */}
+          {/* 계정 아이디 */}
           <div className="mb-10 grid w-full max-w-sm items-center gap-1.5">
-            <Label htmlFor="email">계정 이메일</Label>
-            <Input type="email" id="email" placeholder="계정 이메일" />
+            <Label htmlFor="userId">아이디</Label>
+            <Input
+              id="userId"
+              placeholder="아이디"
+              disabled={true}
+              defaultValue={user?.loginId}
+            />
           </div>
           {/* 회원정보 저장 및 탈퇴 */}
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <div className="flex grow justify-end gap-6">
-              <Button variant="action">회원정보 저장</Button>
+              <Button variant="action" disabled={true}>
+                회원정보 저장
+              </Button>
               <Button variant="secondary">회원탈퇴</Button>
             </div>
           </div>

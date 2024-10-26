@@ -1,14 +1,14 @@
 import { create } from "zustand";
 
-type State = {
+interface State {
   fontStyle: string;
   usedFill: string;
-};
+}
 
-type Action = {
+interface Action {
   updateFont: (font: State["fontStyle"]) => void;
   updateUsedFill: (color: State["usedFill"]) => void;
-};
+}
 
 // Create your store, which includes both state and (optionally) actions
 const useRecentTextSetting = create<State & Action>((set) => ({
