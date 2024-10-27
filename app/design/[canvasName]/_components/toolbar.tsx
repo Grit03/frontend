@@ -1,4 +1,10 @@
-import { useEffect, useRef } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useRef,
+} from "react";
 import { Toolbutton } from "./tool-button";
 import {
   ImagePlus,
@@ -9,6 +15,7 @@ import {
   WandSparkles,
 } from "lucide-react";
 import { CanvasMode, CanvasState, LayerType } from "@/types/canvas";
+import { toast } from "sonner";
 
 interface ToolbarProps {
   canvasState: CanvasState;
@@ -17,6 +24,7 @@ interface ToolbarProps {
   redo: () => void;
   canUndo: boolean;
   canRedo: boolean;
+  setImage: Dispatch<SetStateAction<File | null>>;
 }
 
 export const Toolbar = ({
@@ -26,37 +34,25 @@ export const Toolbar = ({
   redo,
   canUndo,
   canRedo,
+  setImage,
 }: ToolbarProps) => {
-  // const [imageSrc, setImageSrc] = useState<string | null>(null);
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    console.log("test");
     if (event.target.files && event.target.files.length > 0) {
-      const file = event.target.files[0];
-      const reader = new FileReader();
-      // reader.onloadend = () => {
-      //   setImageSrc(reader.result as string);
-      // };
-      // reader.readAsDataURL(file);
+      setImage(event.target.files[0]);
     }
   };
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   const handleButtonClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
 
-  const handleImgAddBtnClick = () => {
-    setCanvasState({
-      mode: CanvasMode.Inserting,
-      layerType: LayerType.Image,
-    });
-    // handleButtonClick();
-  };
-
   return (
-    <div className="absolute left-2 top-[50%] z-50 flex -translate-y-[50%] flex-col gap-y-4">
+    <div className="absolute left-2 top-[50%] z-10 flex -translate-y-[50%] flex-col gap-y-4">
       <div className="flex flex-col items-center gap-y-2 rounded-md bg-white p-1.5 shadow-md">
         <Toolbutton
           label="선택"
@@ -93,7 +89,13 @@ export const Toolbar = ({
         <Toolbutton
           label="이미지 추가"
           icon={ImagePlus}
-          onClick={() => {}}
+          onClick={() => {
+            setCanvasState({
+              mode: CanvasMode.Inserting,
+              layerType: LayerType.Image,
+            });
+            handleButtonClick();
+          }}
           isActive={
             canvasState.mode === CanvasMode.Inserting &&
             canvasState.layerType === LayerType.Image

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { useState } from "react";
 import {
   Camera,
@@ -35,6 +35,12 @@ import useDeleteLayers from "@/hooks/use-delete-layers";
 import SideBar from "./(sidebar)/sidebar";
 import useRecentTextSetting from "@/store/text-store";
 import { useWindowSize } from "@/hooks/use-window-size";
+import { toast } from "sonner";
+import blackTshirt from "@/public/images/t-shirt/black.png";
+import { postUploadImage } from "@/services/canvas/tool";
+import { useCookies } from "react-cookie";
+import { Loading } from "@/components/common/loading";
+import { Loader2 } from "lucide-react";
 
 const MAX_LAYERS = 100;
 
@@ -43,6 +49,7 @@ interface CanvasProps {
 }
 
 export const Canvas = ({ canvasName }: CanvasProps) => {
+  const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
   // 최근 폰트 설정
   const { fontStyle, usedFill, updateFont } = useRecentTextSetting();
 
@@ -62,6 +69,10 @@ export const Canvas = ({ canvasName }: CanvasProps) => {
   // 커서 위치
   const [cursor, setCursor] = useState<Cursor>({ x: 0, y: 0 });
 
+  // 이미지 파일 설정
+  const [image, setImage] = useState<File | null>(null);
+  const [imgLoading, setImgLoading] = useState<boolean>(false);
+
   // layer 요소 id
   const layerIds = useStorage((root) => root.layerIds);
 
@@ -69,13 +80,14 @@ export const Canvas = ({ canvasName }: CanvasProps) => {
 
   // layer 추가 함수
   const insertLayer = useMutation(
-    (
+    async (
       { storage, setMyPresence },
       layerType: LayerType.AiImage | LayerType.Image | LayerType.Text,
       position: Point,
-      fontStyle: string,
+      fontStyle?: string,
+      newImg?: File,
     ) => {
-      console.log("useMutation: ", fontStyle);
+      // console.log("useMutation: ", fontStyle);
       const liveLayers = storage.get("layers");
       if (liveLayers.size >= MAX_LAYERS) return;
 
@@ -93,22 +105,47 @@ export const Canvas = ({ canvasName }: CanvasProps) => {
           width: 100,
           fill: usedFill,
           value: "Text",
-          font: fontStyle,
+          font: fontStyle!,
         });
+        liveLayerIds.push(layerId);
+        liveLayers.set(layerId, layer);
+        setMyPresence({ selection: [layerId] }, { addToHistory: true });
       } else {
-        layer = new LiveObject({
-          type: layerType,
-          x: position.x,
-          y: position.y,
-          src: "",
-          height: 100,
-          width: 100,
-        });
+        try {
+          if (newImg) {
+            // FormData 객체 생성
+            const formData = new FormData();
+            formData.append("clothesName", canvasName);
+            formData.append("imageId", layerId);
+            formData.append("uploadImage", newImg!);
+
+            setImgLoading(true);
+            // 이미지 업로드 요청
+            const imageData = await postUploadImage(
+              formData,
+              cookies.accessToken,
+            );
+
+            console.log(imageData);
+            layer = new LiveObject({
+              type: layerType,
+              x: position.x,
+              y: position.y,
+              src: imageData.imageUrl,
+              height: 200,
+              width: 200,
+            });
+            liveLayerIds.push(layerId);
+            liveLayers.set(layerId, layer);
+            setMyPresence({ selection: [layerId] }, { addToHistory: true });
+          }
+        } catch (error) {
+          toast.error("이미지 업로드에 문제가 있습니다");
+        } finally {
+          setImgLoading(false);
+        }
       }
 
-      liveLayerIds.push(layerId);
-      liveLayers.set(layerId, layer);
-      setMyPresence({ selection: [layerId] }, { addToHistory: true });
       setCanvasState({ mode: CanvasMode.None });
     },
     [],
@@ -145,7 +182,8 @@ export const Canvas = ({ canvasName }: CanvasProps) => {
   // 휠 이벤트 function (카메라 뷰 설정)
   const onWheel = useCallback((e: React.WheelEvent) => {
     e.stopPropagation();
-    setCamera((camera) => ({ x: camera.x - e.deltaX, y: camera.y - e.deltaY }));
+    // 티셔츠 정중앙에 위치해야해서 바꿈
+    setCamera((camera) => ({ x: camera.x + e.deltaX, y: camera.y + e.deltaY }));
   }, []);
 
   const translateSelectedLayers = useMutation(
@@ -333,7 +371,14 @@ export const Canvas = ({ canvasName }: CanvasProps) => {
         unselectLayers();
         setCanvasState({ mode: CanvasMode.None });
       } else if (canvasState.mode === CanvasMode.Inserting) {
-        insertLayer(canvasState.layerType, point, fontStyle);
+        if (canvasState.layerType === LayerType.Text) {
+          insertLayer(canvasState.layerType, point, fontStyle);
+        } else {
+          // canvas layertype image 만 이렇게 됨..?
+          unselectLayers();
+          setCanvasState({ mode: CanvasMode.None });
+          toast.error("삽입할 이미지를 선택해주세요");
+        }
       } else {
         setCanvasState({ mode: CanvasMode.None });
       }
@@ -342,7 +387,25 @@ export const Canvas = ({ canvasName }: CanvasProps) => {
     },
     [camera, canvasState, history, insertLayer, unselectLayers],
   );
+
   const { width, height } = useWindowSize();
+
+  // 이미지 자동 삽입
+  useEffect(() => {
+    if (
+      canvasState.mode === CanvasMode.Inserting &&
+      canvasState.layerType === LayerType.Image
+    ) {
+      if (!image) {
+        return;
+      }
+      console.log(image);
+      const x = width / 2 - 100 - camera.x;
+      const y = height / 2 - 100 - camera.y;
+      insertLayer(canvasState.layerType, { x, y }, undefined, image);
+      setImage(null);
+    }
+  }, [image]);
 
   return (
     <main className="relative h-full w-full touch-none overflow-hidden bg-neutral-100">
@@ -354,10 +417,12 @@ export const Canvas = ({ canvasName }: CanvasProps) => {
         canUndo={canUndo}
         undo={history.undo}
         redo={history.redo}
+        setImage={setImage}
       />
       <SideBar canvasState={canvasState} />
 
       <SelectionTools camera={camera} />
+
       <svg
         className="h-[100vh] w-[100vw]"
         onWheel={onWheel}
@@ -367,14 +432,16 @@ export const Canvas = ({ canvasName }: CanvasProps) => {
       >
         <g
           style={{
-            transform: `translate(${camera.x}px, ${camera.y}px)`,
+            transform: `translate(${width / 2 - 800 / 2 - camera.x}px, ${(height - (800 * blackTshirt.height) / blackTshirt.width) / 2 - camera.y}px)`,
           }}
         >
           <image
-            href="/images/t-shirt/black.png"
-            height="1000"
-            width="1000"
-            className="h-full w-full"
+            href={blackTshirt.src}
+            height={(800 * blackTshirt.height) / blackTshirt.width}
+            width={800}
+            x={0}
+            y={0}
+            // className="h-full w-full"
           />
           {layerIds?.map((layerId) => (
             <LayerPreview
@@ -396,6 +463,14 @@ export const Canvas = ({ canvasName }: CanvasProps) => {
             )}
         </g>
       </svg>
+      {imgLoading && (
+        <div className="pointer absolute inset-0 z-50 flex items-center justify-center bg-zinc-600/20">
+          <div className="text-xl text-white">
+            <Loader2 className="mb-3 h-8 w-full animate-spin" />
+            이미지 업로드 중...
+          </div>
+        </div>
+      )}
     </main>
   );
 };
