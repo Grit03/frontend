@@ -71,10 +71,10 @@ const BungeeShadeFont = Bungee_Shade({
   weight: "400",
 });
 
-const BungeeSpiceFont = Bungee_Spice({
-  subsets: ["latin"],
-  weight: "400",
-});
+// const BungeeSpiceFont = Bungee_Spice({
+//   subsets: ["latin"],
+//   weight: "400",
+// });
 
 const AntonFont = Anton({
   subsets: ["latin"],
@@ -181,20 +181,20 @@ const RubikGlitchFont = Rubik_Glitch({
   weight: "400",
 });
 
-const RubikGlitchPopFont = Rubik_Glitch_Pop({
-  subsets: ["latin"],
-  weight: "400",
-});
+// const RubikGlitchPopFont = Rubik_Glitch_Pop({
+//   subsets: ["latin"],
+//   weight: "400",
+// });
 
-const RubikScribbleFont = Rubik_Scribble({
-  subsets: ["latin"],
-  weight: "400",
-});
+// const RubikScribbleFont = Rubik_Scribble({
+//   subsets: ["latin"],
+//   weight: "400",
+// });
 
-const RubikDoodleShadowFont = Rubik_Doodle_Shadow({
-  subsets: ["latin"],
-  weight: "400",
-});
+// const RubikDoodleShadowFont = Rubik_Doodle_Shadow({
+//   subsets: ["latin"],
+//   weight: "400",
+// });
 
 const RubikIsoFont = Rubik_Iso({
   subsets: ["latin"],
@@ -267,11 +267,11 @@ export const fonts = {
     font: BungeeShadeFont,
     value: "bungeeShadeFont",
   },
-  bungeeSpiceFont: {
-    name: "Bungee Spice",
-    font: BungeeSpiceFont,
-    value: "bungeeSpiceFont",
-  },
+  // bungeeSpiceFont: {
+  //   name: "Bungee Spice",
+  //   font: BungeeSpiceFont,
+  //   value: "bungeeSpiceFont",
+  // },
   antonFont: {
     name: "Anton",
     font: AntonFont,
@@ -382,21 +382,21 @@ export const fonts = {
     font: RubikGlitchFont,
     value: "rubikGlitchFont",
   },
-  rubikGlitchPopFont: {
-    name: "Rubik Glitch Pop",
-    font: RubikGlitchPopFont,
-    value: "rubikGlitchPopFont",
-  },
-  rubikScribbleFont: {
-    name: "Rubik Scribble",
-    font: RubikScribbleFont,
-    value: "rubikScribbleFont",
-  },
-  rubikDoodleShadowFont: {
-    name: "Rubik Doodle Shadow",
-    font: RubikDoodleShadowFont,
-    value: "rubikDoodleShadowFont",
-  },
+  // rubikGlitchPopFont: {
+  //   name: "Rubik Glitch Pop",
+  //   font: RubikGlitchPopFont,
+  //   value: "rubikGlitchPopFont",
+  // },
+  // rubikScribbleFont: {
+  //   name: "Rubik Scribble",
+  //   font: RubikScribbleFont,
+  //   value: "rubikScribbleFont",
+  // },
+  // rubikDoodleShadowFont: {
+  //   name: "Rubik Doodle Shadow",
+  //   font: RubikDoodleShadowFont,
+  //   value: "rubikDoodleShadowFont",
+  // },
   rubikIsoFont: {
     name: "Rubik Iso",
     font: RubikIsoFont,

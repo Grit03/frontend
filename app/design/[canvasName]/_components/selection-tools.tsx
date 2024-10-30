@@ -1,16 +1,23 @@
 "use client";
 
 import { useSelectionBounds } from "@/hooks/use-selection-bounds";
-import { Camera } from "@/types/canvas";
+import { Camera, LayerType } from "@/types/canvas";
 import { useMutation, useSelf } from "@liveblocks/react/suspense";
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { Hint } from "@/components/ui/hint";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import useDeleteLayers from "@/hooks/use-delete-layers";
 import { RiSendBackward, RiBringForward } from "react-icons/ri";
 import { PiSelectionBackgroundDuotone } from "react-icons/pi";
-import Image from "next/image";
+import { useCookies } from "react-cookie";
+import { toast } from "sonner";
+import useSelectedLayerStore, {
+  ImgProcessMode,
+} from "@/store/selected-layer-store";
+import { useStorage } from "@liveblocks/react";
+import { postRemoveBg } from "@/services/canvas/tool";
+import { usePathname } from "next/navigation";
 
 interface SelectionToolsProps {
   camera: Camera;
@@ -20,36 +27,22 @@ export const SelectionTools = memo(({ camera }: SelectionToolsProps) => {
   const [activeFontFamily, setActiveFontFamily] = useState<string>("Open Sans");
   const selection = useSelf((me) => me.presence.selection);
   const [iconColor, setIconColor] = useState<string>("000000");
+  const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
 
-  // const setFill = useMutation(({ storage }, fill: Color) => {
-  //   const liveLayers = storage.get("layers");
-  //   // setLastUsedColor(fill);
+  const { mode, setSelectedLayer, clearSelectedLayer, setProcessMode } =
+    useSelectedLayerStore();
+  const layers = useStorage((root) => root.layers);
 
-  //   selection.forEach((id) => {
-  //     const layer = liveLayers.get(id);
+  useEffect(() => {
+    setSelectedLayer(selection);
+    // console.log(selection);
+  }, [selection]);
 
-  //     // text layer인 경우
-  //     if (layer && layer.toObject().type === LayerType.Text) {
-  //       const textLayer = layer as LiveObject<TextLayer>;
-  //       textLayer.set("fill", fill);
-  //     }
-  //   });
-  // }, []);
+  useEffect(() => {
+    return clearSelectedLayer();
+  }, []);
 
-  // const isSelectedTextLayerOnly = useMutation(({ storage }) => {
-  //   const liveLayers = storage.get("layers");
-  //   if (selection.length === 1) {
-  //     const layer = liveLayers.get(selection[0]);
-  //     // const layer = useStorage((root) => root.layers.get(selection[0]));
-  //     if (layer && layer.toObject().type === LayerType.Text) {
-  //       return true;
-  //     } else {
-  //       return false;
-  //     }
-  //   } else {
-  //     return false;
-  //   }
-  // }, []);
+  const pathname = usePathname();
 
   const moveToFront = useMutation(
     ({ storage }) => {
@@ -94,7 +87,54 @@ export const SelectionTools = memo(({ camera }: SelectionToolsProps) => {
     [selection],
   );
 
+  // 삭제 이벤트 핸들러
+  const handleDelete = async () => {
+    try {
+      setProcessMode(ImgProcessMode.Deleting);
+      await deleteLayers();
+      toast.success("이미지 삭제에 성공했습니다.");
+    } catch (error) {
+      toast.error("이미지 삭제에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setProcessMode(ImgProcessMode.None);
+    }
+  };
+
   const deleteLayers = useDeleteLayers();
+
+  // 배경 제거 이벤트 핸들러
+  const handleRemoveBg = useMutation(
+    async ({ storage }) => {
+      try {
+        setProcessMode(ImgProcessMode.RemovingBg);
+        if (selection.length === 1) {
+          const liveLayer = storage.get("layers");
+          const layer = liveLayer.get(selection[0]);
+          let layerObj = layer!.toObject()!;
+
+          if (layer && layerObj && layerObj.type !== LayerType.Text) {
+            const formData = {
+              clothesName: decodeURIComponent(pathname).split("/")[2],
+              imageId: selection[0],
+              imageUrl: layerObj.src,
+            };
+            const data = await postRemoveBg(formData, cookies.accessToken);
+            layer.update({ src: data.imageUrl });
+            toast.success("배경 제거에 성공했습니다.");
+          } else {
+            toast.error("배경 제거할 수 있는 요소가 아닙니다");
+          }
+        } else {
+          toast.error("이미지 요소를 한 개 선택해주세요.");
+        }
+      } catch (error) {
+        toast.error("배경 제거에 실패했습니다. 다시 시도해주세요.");
+      } finally {
+        setProcessMode(ImgProcessMode.None);
+      }
+    },
+    [selection],
+  );
 
   const selectionBounds = useSelectionBounds();
   if (!selectionBounds) {
@@ -112,14 +152,16 @@ export const SelectionTools = memo(({ camera }: SelectionToolsProps) => {
       }}
     >
       {/* <ColorPicker onChange={setFill} /> */}
-
-      <div className="mr-2 flex items-center border-r border-neutral-200 pr-2">
-        <Hint label="배경 제거">
-          <Button onClick={() => {}} variant="design" size="icon">
-            <PiSelectionBackgroundDuotone className="text-2xl" />
-          </Button>
-        </Hint>
-      </div>
+      {selection.length === 1 &&
+        layers?.get(selection[0])?.type !== LayerType.Text && (
+          <div className="mr-2 flex items-center border-r border-neutral-200 pr-2">
+            <Hint label="배경 제거">
+              <Button onClick={handleRemoveBg} variant="design" size="icon">
+                <PiSelectionBackgroundDuotone className="text-2xl" />
+              </Button>
+            </Hint>
+          </div>
+        )}
 
       <Hint label="앞으로 가져오기">
         <Button onClick={moveToFront} variant="design" size="icon">
@@ -133,8 +175,9 @@ export const SelectionTools = memo(({ camera }: SelectionToolsProps) => {
       </Hint>
       <div className="ml-2 flex items-center border-l border-neutral-200 pl-2">
         <Hint label="삭제하기">
-          <Button variant="design" size="icon" onClick={deleteLayers}>
+          <Button variant="design" size="icon" onClick={handleDelete}>
             <Trash2 className="w-5" />
+            {mode}
           </Button>
         </Hint>
       </div>

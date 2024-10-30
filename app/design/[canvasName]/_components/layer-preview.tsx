@@ -5,6 +5,7 @@ import { LayerType } from "@/types/canvas";
 import { useStorage } from "@liveblocks/react/suspense";
 import { ImageRectangle } from "./image-rectangle";
 import { Text } from "./text";
+import { AiImage } from "./ai-image";
 
 interface LayerPreviewProps {
   id: string;
@@ -29,7 +30,9 @@ export const LayerPreview = memo(
           />
         );
       case LayerType.AiImage:
-        return null;
+        return (
+          <AiImage id={id} layer={layer} onPointerDown={onLayerPointerDown} />
+        );
       case LayerType.Text:
         return (
           <Text id={id} layer={layer} onPointerDown={onLayerPointerDown} />

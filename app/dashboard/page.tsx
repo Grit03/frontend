@@ -10,6 +10,7 @@ import { useCookies } from "react-cookie";
 import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import Image from "next/image";
 import Link from "next/link";
+import { useRef } from "react";
 
 export default function DashBoardPage() {
   const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
@@ -22,7 +23,7 @@ export default function DashBoardPage() {
   return (
     <>
       <h1 className="py-2 text-4xl font-bold">내 디자인</h1>
-      <div className="grid h-full w-full auto-cols-auto grid-cols-3 gap-3 overflow-y-auto border px-4 py-7 scrollbar-hide">
+      <div className="grid min-w-80 grid-cols-1 items-stretch justify-items-stretch gap-4 overflow-y-auto px-4 py-7 scrollbar-hide md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         <NamingModal
           description="생성할 디자인 캔버스의 이름을 입력해주세요"
           buttonName="생성하기"
@@ -33,19 +34,14 @@ export default function DashBoardPage() {
             <div className="text-lg font-semibold">디자인 생성하기</div>
           </button>
         </NamingModal>
-
+        {/* <Skeleton className="aspect-square rounded-3xl" /> */}
         {data &&
-          data
-            .sort(
-              (a, b) =>
-                new Date(b.createdAt).getTime() -
-                new Date(a.createdAt).getTime(),
-            )
-            .map((canvas) => (
-              <Link
-                href={`/design/${canvas.clothesName}`}
-                className="group relative aspect-square overflow-hidden rounded-3xl shadow-[0_0_20px] shadow-zinc-200"
-              >
+          data.map((canvas) => (
+            <Link
+              href={`/design/${canvas.clothesName}`}
+              className="group relative aspect-square rounded-3xl shadow-[0_0_20px] shadow-zinc-200"
+            >
+              <div className="overflow-hidden rounded-3xl">
                 <Image
                   alt="캔버스 디자인 placeholder"
                   src="/placeholder/design-placeholder.png"
@@ -53,22 +49,28 @@ export default function DashBoardPage() {
                   height={300}
                   className="h-full w-full from-slate-100 object-cover"
                 />
-                <div className="absolute inset-0 h-full transition hover:bg-zinc-600/10">
-                  <div className="absolute inset-x-0 bottom-0 px-4 py-2 text-right font-medium text-zinc-800 opacity-0 transition group-hover:opacity-100">
-                    {canvas.clothesName}
-                  </div>
-                  <DesignActionMenu key={canvas.roomId} canvasData={canvas}>
-                    <div className="absolute left-0 cursor-pointer px-4 py-2 font-medium text-zinc-800 opacity-0 transition hover:text-indigo-600 group-hover:opacity-100">
-                      <HiOutlineDotsHorizontal className="text-2xl" />
-                    </div>
-                  </DesignActionMenu>
+              </div>
+
+              <div
+                className="absolute inset-0 h-full overflow-hidden rounded-3xl transition hover:bg-zinc-600/10"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="absolute inset-x-0 bottom-0 px-4 py-2 text-right font-medium text-zinc-800 opacity-0 transition group-hover:opacity-100">
+                  {canvas.clothesName}
                 </div>
-              </Link>
-            ))}
+                <DesignActionMenu key={canvas.roomId} canvasData={canvas}>
+                  <div className="absolute left-0 cursor-pointer px-4 py-2 font-medium text-zinc-800 opacity-0 transition hover:text-indigo-600 group-hover:opacity-100">
+                    <HiOutlineDotsHorizontal className="text-2xl" />
+                  </div>
+                </DesignActionMenu>
+              </div>
+            </Link>
+          ))}
+
         {isLoading && (
           <>
-            <Skeleton className="aspect-square h-full w-full rounded-3xl" />
-            <Skeleton className="aspect-square h-full w-full rounded-3xl" />
+            <Skeleton className="aspect-square rounded-3xl" />
+            <Skeleton className="aspect-square rounded-3xl" />
           </>
         )}
       </div>

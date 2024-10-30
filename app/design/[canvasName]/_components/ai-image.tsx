@@ -5,19 +5,19 @@ import useSelectedLayerStore, {
   ImgProcessMode,
 } from "@/store/selected-layer-store";
 
-interface ImageRectangleProps {
+interface AiImageProps {
   id: string;
-  layer: ImageLayer;
+  layer: AiImageLayer;
   onPointerDown: (e: React.PointerEvent, id: string) => void;
   selectionColor?: string;
 }
 
-export const ImageRectangle = ({
+export const AiImage = ({
   id,
   layer,
   onPointerDown,
   selectionColor,
-}: ImageRectangleProps) => {
+}: AiImageProps) => {
   const { selections, mode } = useSelectedLayerStore();
   const { x, y, width, height, src } = layer;
   useEffect(() => {

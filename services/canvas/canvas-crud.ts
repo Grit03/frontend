@@ -37,10 +37,13 @@ export const getAllDesignCanvas = async (
   accessToken: string,
 ): Promise<CanvasData[]> => {
   try {
-    const { data } = await axiosInstance.get("/clothes/view", {
+    const { data } = await axiosInstance.get<CanvasData[]>("/clothes/view", {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
-    return data;
+    return data.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
   } catch (error) {
     console.log(error);
     return [];

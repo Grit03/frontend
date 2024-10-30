@@ -14,6 +14,7 @@ import {
 } from "@/types/canvas";
 import { Info } from "./info";
 import {
+  cn,
   findIntersectingLayersWithRectangle,
   pointerEventToCanvasPoint,
   resizeBounds,
@@ -41,6 +42,9 @@ import { postUploadImage } from "@/services/canvas/tool";
 import { useCookies } from "react-cookie";
 import { Loading } from "@/components/common/loading";
 import { Loader2 } from "lucide-react";
+import useSelectedLayerStore, {
+  ImgProcessMode,
+} from "@/store/selected-layer-store";
 
 const MAX_LAYERS = 100;
 
@@ -49,6 +53,8 @@ interface CanvasProps {
 }
 
 export const Canvas = ({ canvasName }: CanvasProps) => {
+  const { width, height } = useWindowSize();
+  const svgRef = useRef<SVGSVGElement | null>(null);
   const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
   // 최근 폰트 설정
   const { fontStyle, usedFill, updateFont } = useRecentTextSetting();
@@ -58,13 +64,20 @@ export const Canvas = ({ canvasName }: CanvasProps) => {
     mode: CanvasMode.None,
   });
 
+  // 선택된 layer 이미지 관련 모드
+  const { mode, setSelectedLayer, clearSelectedLayer, setProcessMode } =
+    useSelectedLayerStore();
+
   // 작업 history
   const history = useHistory();
   const canRedo = useCanRedo();
   const canUndo = useCanUndo();
 
   // 카메라 위치
-  const [camera, setCamera] = useState<Camera>({ x: 0, y: 0 });
+  const [camera, setCamera] = useState<Camera>({
+    x: 0,
+    y: 0,
+  });
 
   // 커서 위치
   const [cursor, setCursor] = useState<Cursor>({ x: 0, y: 0 });
@@ -182,8 +195,7 @@ export const Canvas = ({ canvasName }: CanvasProps) => {
   // 휠 이벤트 function (카메라 뷰 설정)
   const onWheel = useCallback((e: React.WheelEvent) => {
     e.stopPropagation();
-    // 티셔츠 정중앙에 위치해야해서 바꿈
-    setCamera((camera) => ({ x: camera.x + e.deltaX, y: camera.y + e.deltaY }));
+    setCamera((camera) => ({ x: camera.x - e.deltaX, y: camera.y - e.deltaY }));
   }, []);
 
   const translateSelectedLayers = useMutation(
@@ -388,8 +400,6 @@ export const Canvas = ({ canvasName }: CanvasProps) => {
     [camera, canvasState, history, insertLayer, unselectLayers],
   );
 
-  const { width, height } = useWindowSize();
-
   // 이미지 자동 삽입
   useEffect(() => {
     if (
@@ -407,8 +417,25 @@ export const Canvas = ({ canvasName }: CanvasProps) => {
     }
   }, [image]);
 
+  useEffect(() => {
+    if (svgRef.current) {
+      setCamera({
+        x: svgRef.current?.clientWidth! / 2 - 800 / 2,
+        y:
+          (svgRef.current?.clientHeight! -
+            (800 * blackTshirt.height) / blackTshirt.width) /
+          2,
+      });
+    }
+  }, [svgRef.current]);
+
   return (
-    <main className="relative h-full w-full touch-none overflow-hidden bg-neutral-100">
+    <main
+      className={cn(
+        "relative h-full w-full touch-none overflow-hidden bg-neutral-100",
+        mode !== ImgProcessMode.None && "pointer-events-none",
+      )}
+    >
       <Info canvasName={canvasName} />
       <Toolbar
         canvasState={canvasState}
@@ -429,10 +456,11 @@ export const Canvas = ({ canvasName }: CanvasProps) => {
         onPointerMove={onPointerMove}
         onPointerDown={onPointerDown}
         onPointerUp={onPointerUp}
+        ref={svgRef}
       >
         <g
           style={{
-            transform: `translate(${width / 2 - 800 / 2 - camera.x}px, ${(height - (800 * blackTshirt.height) / blackTshirt.width) / 2 - camera.y}px)`,
+            transform: `translate(${camera.x}px, ${camera.y}px)`,
           }}
         >
           <image

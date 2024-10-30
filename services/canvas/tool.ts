@@ -1,29 +1,98 @@
 import { axiosInstance } from "../axios-instance";
 
-// export interface UploadImageForm {
-//   clothesName: string;
-//   imageId: string;
-//   imageFile: File;
-// }
-
-interface UploadImageResponse {
+interface ImageResponse {
   imageId: string;
   roomId: string;
   imageUrl: string;
+}
+
+interface DeleteImageForm {
+  fileUrl: string;
+}
+
+interface RemoveImageForm {
+  clothesName: string;
+  imageId: string;
+  imageUrl: string;
+}
+
+export interface GeneratingImageForm {
+  clothesName: string;
+  imageId: string;
+  designStyle:
+    | "none"
+    | "line-art-style"
+    | "vintage-style"
+    | "graffiti-style"
+    | "pop-art-style"
+    | "geometric-style"
+    | "hand-drawn-style"
+    | "3D-style"
+    | "collage-style"
+    | "watercolor-style"
+    | "sticker-style";
+  prompt: string;
 }
 
 // 이미지 추가
 export const postUploadImage = async (
   formData: FormData,
   accessToken: string,
-): Promise<UploadImageResponse> => {
-  const { data } = await axiosInstance.post<UploadImageResponse>(
+): Promise<ImageResponse> => {
+  const { data } = await axiosInstance.post<ImageResponse>(
     "/image/upload",
     formData,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "multipart/form-data",
+      },
+    },
+  );
+  return data;
+};
+
+// 이미지 삭제
+export const postDeleteImage = async (
+  formData: DeleteImageForm,
+  accessToken: string,
+) => {
+  const response = await axiosInstance.post("/image/delete", formData, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  return response;
+};
+
+// 배경 제거
+export const postRemoveBg = async (
+  formData: RemoveImageForm,
+  accessToken: string,
+): Promise<ImageResponse> => {
+  const { data } = await axiosInstance.post<ImageResponse>(
+    "/image/remove-background",
+    formData,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+  return data;
+};
+
+// 프롬프트 이미지 생성
+export const postGeneratingImage = async (
+  formData: GeneratingImageForm,
+  accessToken: string,
+): Promise<ImageResponse> => {
+  const { data } = await axiosInstance.post<ImageResponse>(
+    "/image/generate",
+    formData,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
       },
     },
   );

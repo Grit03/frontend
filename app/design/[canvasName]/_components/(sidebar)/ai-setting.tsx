@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -7,7 +8,13 @@ import { WandSparkles } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Controller, useForm } from "react-hook-form";
 import { GiCardRandom } from "react-icons/gi";
-import { postImageGenerating } from "@/services/design-sidebar/ai-setting";
+import {
+  GeneratingImageForm,
+  postGeneratingImage,
+} from "@/services/canvas/tool";
+import { MdOutlineDraw } from "react-icons/md";
+import { usePathname } from "next/navigation";
+import { useCookies } from "react-cookie";
 
 export interface PromptInputs {
   designStyle:
@@ -20,7 +27,8 @@ export interface PromptInputs {
     | "hand-drawn-style"
     | "3D-style"
     | "collage-style"
-    | "watercolor-style";
+    | "watercolor-style"
+    | "sticker-style";
   prompt: string;
 }
 
@@ -97,9 +105,17 @@ const styleList = [
     description:
       "부드럽고 따뜻한 색상을 사용하고, 물감 느낌을 강조하며 수채화 디자인을 생성합니다",
   },
+  {
+    type: "sticker-style",
+    name: "스티커",
+    value: "sticker-style",
+    description:
+      "귀엽고 생동감 있는 그래픽 요소로 스티커 같은 디자인을 만듭니다",
+  },
 ];
 
 export default function AiSetting() {
+  const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
   const {
     register,
     control,
@@ -112,9 +128,20 @@ export default function AiSetting() {
     },
   });
 
+  const pathname = usePathname();
+
   const onSubmit = async ({ designStyle, prompt }: PromptInputs) => {
-    const formData = { clothesName: "", imageId: "", designStyle, prompt };
-    const res = await postImageGenerating(formData);
+    const formData: GeneratingImageForm = {
+      clothesName: pathname.split("/")[2],
+      imageId: "",
+      designStyle,
+      prompt,
+    };
+    try {
+      const data = await postGeneratingImage(formData, cookies.accessToken);
+    } catch (error) {
+    } finally {
+    }
   };
 
   return (
@@ -151,6 +178,10 @@ export default function AiSetting() {
           />
           <Button type="submit" variant="action">
             <span className="mr-2">생성하기</span>
+            <WandSparkles className="w-4" />
+          </Button>
+          <Button variant="designActive" className="mt-2">
+            <span className="mr-2">프롬프트 추천</span>
             <WandSparkles className="w-4" />
           </Button>
         </div>

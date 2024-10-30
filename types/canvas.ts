@@ -30,6 +30,7 @@ export type AiImageLayer = {
   type: LayerType.AiImage;
   x: number;
   y: number;
+  src: string;
   height: number;
   width: number;
 };
