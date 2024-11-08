@@ -4,6 +4,7 @@ import { useSelf, useStorage } from "@liveblocks/react";
 
 import TextSetting from "./text-setting";
 import AiSetting from "./ai-setting";
+import { Dispatch, SetStateAction } from "react";
 
 interface SideBarWrapperProps {
   isClosed: boolean;
@@ -12,9 +13,10 @@ interface SideBarWrapperProps {
 
 interface SideBarProps {
   canvasState: CanvasState;
+  setCanvasState: Dispatch<SetStateAction<CanvasState>>;
 }
 
-export default function SideBar({ canvasState }: SideBarProps) {
+export default function SideBar({ canvasState, setCanvasState }: SideBarProps) {
   const selection = useSelf((me) => me.presence.selection);
   const layer =
     selection && useStorage((root) => root.layers.get(selection[0]));
@@ -24,16 +26,18 @@ export default function SideBar({ canvasState }: SideBarProps) {
   const isTextLayer =
     layer && selection?.length === 1 && layer.type === LayerType.Text;
 
-  const closed =
-    !isTextLayer && canvasState.mode !== CanvasMode.Generating && !isAiImage;
+  // const closed =
+  //   !isTextLayer && canvasState.mode !== CanvasMode.Generating && !isAiImage;
+
+  const closed = !isTextLayer && canvasState.mode !== CanvasMode.Generating;
 
   return (
     <SideBarWrapper isClosed={closed}>
       {canvasState.mode !== CanvasMode.Generating && isTextLayer && (
         <TextSetting layer={layer} />
       )}
-      {(canvasState.mode === CanvasMode.Generating || isAiImage) && (
-        <AiSetting />
+      {canvasState.mode === CanvasMode.Generating && (
+        <AiSetting setCanvasState={setCanvasState} />
       )}
     </SideBarWrapper>
   );

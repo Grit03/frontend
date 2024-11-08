@@ -92,7 +92,8 @@ export const SelectionTools = memo(({ camera }: SelectionToolsProps) => {
     try {
       setProcessMode(ImgProcessMode.Deleting);
       await deleteLayers();
-      toast.success("이미지 삭제에 성공했습니다.");
+      if (layers?.get(selection[0])?.type !== LayerType.Text)
+        toast.success("이미지 삭제에 성공했습니다.");
     } catch (error) {
       toast.error("이미지 삭제에 실패했습니다. 다시 시도해주세요.");
     } finally {
@@ -177,7 +178,6 @@ export const SelectionTools = memo(({ camera }: SelectionToolsProps) => {
         <Hint label="삭제하기">
           <Button variant="design" size="icon" onClick={handleDelete}>
             <Trash2 className="w-5" />
-            {mode}
           </Button>
         </Hint>
       </div>

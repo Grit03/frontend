@@ -11,6 +11,8 @@ import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import Image from "next/image";
 import Link from "next/link";
 import { useRef } from "react";
+import Preview from "./_components/preview";
+import { Room } from "../design/[canvasName]/_components/room";
 
 export default function DashBoardPage() {
   const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
@@ -42,6 +44,17 @@ export default function DashBoardPage() {
               className="group relative aspect-square rounded-3xl shadow-[0_0_20px] shadow-zinc-200"
             >
               <div className="overflow-hidden rounded-3xl">
+                {/* <div className="h-full w-full">
+                  <Room
+                    roomId={canvas.roomId}
+                    // fallback={
+                    //   <Skeleton className="absolute inset-0 h-full w-full" />
+                    // }
+                  >
+                    <Preview canvasName={canvas.clothesName} />
+                  </Room>
+                </div> */}
+
                 <Image
                   alt="캔버스 디자인 placeholder"
                   src="/placeholder/design-placeholder.png"

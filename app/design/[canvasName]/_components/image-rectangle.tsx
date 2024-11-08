@@ -10,6 +10,7 @@ interface ImageRectangleProps {
   layer: ImageLayer;
   onPointerDown: (e: React.PointerEvent, id: string) => void;
   selectionColor?: string;
+  ratio?: number;
 }
 
 export const ImageRectangle = ({
@@ -17,6 +18,7 @@ export const ImageRectangle = ({
   layer,
   onPointerDown,
   selectionColor,
+  ratio = 1,
 }: ImageRectangleProps) => {
   const { selections, mode } = useSelectedLayerStore();
   const { x, y, width, height, src } = layer;
@@ -29,14 +31,15 @@ export const ImageRectangle = ({
         className="border drop-shadow-md"
         onPointerDown={(e) => onPointerDown(e, id)}
         style={{
-          transform: `translate(${x}px, ${y}px)`,
+          transform: `translate(${x * ratio}px, ${y * ratio}px)`,
         }}
         x={0}
         y={0}
-        width={width}
-        height={height}
+        width={width * ratio}
+        height={height * ratio}
         href={src}
         strokeWidth={1}
+        crossOrigin="anonymous"
       />
       {selections?.includes(id) && mode === ImgProcessMode.Deleting && (
         <>

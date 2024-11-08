@@ -3,13 +3,17 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import { useState } from "react";
 import {
+  AiImageLayer,
   Camera,
   CanvasMode,
   CanvasState,
   Cursor,
+  ImageLayer,
+  Layer,
   LayerType,
   Point,
   Side,
+  TextLayer,
   XYWH,
 } from "@/types/canvas";
 import { Info } from "./info";
@@ -45,6 +49,11 @@ import { Loader2 } from "lucide-react";
 import useSelectedLayerStore, {
   ImgProcessMode,
 } from "@/store/selected-layer-store";
+import useIsGeneratingStore from "@/store/generating-store";
+import html2canvas from "html2canvas";
+import { Canvg } from "canvg";
+import Image from "next/image";
+import axios from "axios";
 
 const MAX_LAYERS = 100;
 
@@ -92,73 +101,160 @@ export const Canvas = ({ canvasName }: CanvasProps) => {
   const deleteLayers = useDeleteLayers();
 
   // layer 추가 함수
+  // const insertLayer = useMutation(
+  //   async (
+  //     { storage, setMyPresence },
+  //     layerType: LayerType.AiImage | LayerType.Image | LayerType.Text,
+  //     position: Point,
+  //     fontStyle?: string,
+  //     newImg?: File,
+  //   ) => {
+  //     // console.log("useMutation: ", fontStyle);
+  //     const liveLayers = storage.get("layers");
+  //     if (liveLayers.size >= MAX_LAYERS) return;
+
+  //     const liveLayerIds = storage.get("layerIds");
+  //     const layerId = nanoid();
+  //     let layer = null;
+
+  //     switch (layerType) {
+  //       case LayerType.Text:
+  //         layer = new LiveObject({
+  //           type: layerType,
+  //           x: position.x,
+  //           y: position.y,
+  //           height: 100,
+  //           width: 100,
+  //           fill: usedFill,
+  //           value: "Text",
+  //           font: fontStyle!,
+  //         });
+  //         liveLayerIds.push(layerId);
+  //         liveLayers.set(layerId, layer);
+  //         setMyPresence({ selection: [layerId] }, { addToHistory: true });
+  //         setCanvasState({ mode: CanvasMode.None });
+  //         break;
+  //       case LayerType.Image:
+  //         try {
+  //           if (newImg) {
+  //             // FormData 객체 생성
+  //             const formData = new FormData();
+  //             formData.append("clothesName", canvasName);
+  //             formData.append("imageId", layerId);
+  //             formData.append("uploadImage", newImg!);
+
+  //             setImgLoading(true);
+  //             // 이미지 업로드 요청
+  //             const imageData = await postUploadImage(
+  //               formData,
+  //               cookies.accessToken,
+  //             );s
+
+  //             console.log(imageData);
+  //             layer = new LiveObject({
+  //               type: LayerType.Image,
+  //               x: position.x,
+  //               y: position.y,
+  //               src: imageData.imageUrl,
+  //               height: 200,
+  //               width: 200,
+  //             });
+  //             liveLayerIds.push(layerId);
+  //             liveLayers.set(layerId, layer);
+  //             setMyPresence({ selection: [layerId] }, { addToHistory: true });
+  //           }
+  //         } catch (error) {
+  //           toast.error("이미지 업로드에 문제가 있습니다");
+  //         } finally {
+  //           setImgLoading(false);
+  //           setCanvasState({ mode: CanvasMode.None });
+  //         }
+  //         break;
+  //       case LayerType.AiImage:
+  //       default:
+  //         break;
+  //     }
+
+  //     // console.log("인서트 시 폰트 : ", font);
+  //     // if (layerType === LayerType.Text) {
+  //     //   layer = new LiveObject({
+  //     //     type: layerType,
+  //     //     x: position.x,
+  //     //     y: position.y,
+  //     //     height: 100,
+  //     //     width: 100,
+  //     //     fill: usedFill,
+  //     //     value: "Text",
+  //     //     font: fontStyle!,
+  //     //   });
+  //     //   liveLayerIds.push(layerId);
+  //     //   liveLayers.set(layerId, layer);
+  //     //   setMyPresence({ selection: [layerId] }, { addToHistory: true });
+  //     // } else {
+  //     // }
+  //   },
+  //   [],
+  // );
+
   const insertLayer = useMutation(
     async (
       { storage, setMyPresence },
-      layerType: LayerType.AiImage | LayerType.Image | LayerType.Text,
+      layerType: LayerType.Image | LayerType.AiImage | LayerType.Text,
       position: Point,
       fontStyle?: string,
       newImg?: File,
     ) => {
-      // console.log("useMutation: ", fontStyle);
       const liveLayers = storage.get("layers");
-      if (liveLayers.size >= MAX_LAYERS) return;
-
       const liveLayerIds = storage.get("layerIds");
       const layerId = nanoid();
-      let layer = null;
+      let layer: LiveObject<Layer> | null = null;
 
-      // console.log("인서트 시 폰트 : ", font);
-      if (layerType === LayerType.Text) {
-        layer = new LiveObject({
-          type: layerType,
-          x: position.x,
-          y: position.y,
-          height: 100,
-          width: 100,
-          fill: usedFill,
-          value: "Text",
-          font: fontStyle!,
-        });
-        liveLayerIds.push(layerId);
-        liveLayers.set(layerId, layer);
-        setMyPresence({ selection: [layerId] }, { addToHistory: true });
-      } else {
-        try {
+      switch (layerType) {
+        case LayerType.Text:
+          layer = new LiveObject<TextLayer>({
+            type: LayerType.Text,
+            x: position.x,
+            y: position.y,
+            height: 100,
+            width: 100,
+            fill: usedFill,
+            value: "Text",
+            font: fontStyle || "poppinsFont",
+          });
+          break;
+
+        case LayerType.Image:
           if (newImg) {
-            // FormData 객체 생성
             const formData = new FormData();
             formData.append("clothesName", canvasName);
             formData.append("imageId", layerId);
-            formData.append("uploadImage", newImg!);
+            formData.append("uploadImage", newImg);
 
-            setImgLoading(true);
-            // 이미지 업로드 요청
             const imageData = await postUploadImage(
               formData,
               cookies.accessToken,
             );
 
-            console.log(imageData);
-            layer = new LiveObject({
-              type: layerType,
+            layer = new LiveObject<ImageLayer>({
+              type: LayerType.Image,
               x: position.x,
               y: position.y,
               src: imageData.imageUrl,
               height: 200,
               width: 200,
             });
-            liveLayerIds.push(layerId);
-            liveLayers.set(layerId, layer);
-            setMyPresence({ selection: [layerId] }, { addToHistory: true });
           }
-        } catch (error) {
-          toast.error("이미지 업로드에 문제가 있습니다");
-        } finally {
-          setImgLoading(false);
-        }
+          break;
+
+        default:
+          break;
       }
 
+      if (layer) {
+        liveLayerIds.push(layerId);
+        liveLayers.set(layerId, layer);
+        setMyPresence({ selection: [layerId] }, { addToHistory: true });
+      }
       setCanvasState({ mode: CanvasMode.None });
     },
     [],
@@ -263,8 +359,6 @@ export const Canvas = ({ canvasName }: CanvasProps) => {
         current,
       );
 
-      // console.log(ids);
-
       setMyPresence({ selection: ids });
     },
     [layerIds],
@@ -344,7 +438,6 @@ export const Canvas = ({ canvasName }: CanvasProps) => {
       }
 
       setCursor(current);
-      // console.log(cursor);
     },
     [
       camera,
@@ -409,7 +502,7 @@ export const Canvas = ({ canvasName }: CanvasProps) => {
       if (!image) {
         return;
       }
-      console.log(image);
+
       const x = width / 2 - 100 - camera.x;
       const y = height / 2 - 100 - camera.y;
       insertLayer(canvasState.layerType, { x, y }, undefined, image);
@@ -429,6 +522,53 @@ export const Canvas = ({ canvasName }: CanvasProps) => {
     }
   }, [svgRef.current]);
 
+  const insertAiImageLayer = useMutation(
+    async (
+      { storage, setMyPresence },
+      layerType: LayerType.AiImage,
+      position: Point,
+      imgsrc: string,
+    ) => {
+      const liveLayers = storage.get("layers");
+      const liveLayerIds = storage.get("layerIds");
+      const layerId = nanoid();
+      let layer: LiveObject<Layer> | null = null;
+      if (layerType === LayerType.AiImage) {
+        layer = new LiveObject<AiImageLayer>({
+          type: LayerType.AiImage,
+          x: position.x,
+          y: position.y,
+          src: imgsrc,
+          height: 200,
+          width: 200,
+        });
+      }
+      if (layer) {
+        liveLayerIds.push(layerId);
+        liveLayers.set(layerId, layer);
+        setMyPresence({ selection: [layerId] }, { addToHistory: true });
+      }
+    },
+    [],
+  );
+
+  const { layerId, src, setImgSrc, clearLayerId } = useIsGeneratingStore();
+
+  useEffect(() => {
+    if (
+      layerId &&
+      src &&
+      canvasState.mode === CanvasMode.Inserting &&
+      canvasState.layerType === LayerType.AiImage
+    ) {
+      const x = width / 2 - 100 - camera.x;
+      const y = height / 2 - 100 - camera.y;
+      insertAiImageLayer(canvasState.layerType, { x, y }, src);
+      clearLayerId();
+      setImgSrc(null);
+    }
+  }, [layerId]);
+
   return (
     <main
       className={cn(
@@ -437,6 +577,7 @@ export const Canvas = ({ canvasName }: CanvasProps) => {
       )}
     >
       <Info canvasName={canvasName} />
+
       <Toolbar
         canvasState={canvasState}
         setCanvasState={setCanvasState}
@@ -446,11 +587,12 @@ export const Canvas = ({ canvasName }: CanvasProps) => {
         redo={history.redo}
         setImage={setImage}
       />
-      <SideBar canvasState={canvasState} />
-
+      <SideBar canvasState={canvasState} setCanvasState={setCanvasState} />
       <SelectionTools camera={camera} />
-
       <svg
+        id="svgElement"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
         className="h-[100vh] w-[100vw]"
         onWheel={onWheel}
         onPointerMove={onPointerMove}
@@ -464,7 +606,7 @@ export const Canvas = ({ canvasName }: CanvasProps) => {
           }}
         >
           <image
-            href={blackTshirt.src}
+            href="/images/t-shirt/black.png"
             height={(800 * blackTshirt.height) / blackTshirt.width}
             width={800}
             x={0}
@@ -491,14 +633,6 @@ export const Canvas = ({ canvasName }: CanvasProps) => {
             )}
         </g>
       </svg>
-      {imgLoading && (
-        <div className="pointer absolute inset-0 z-50 flex items-center justify-center bg-zinc-600/20">
-          <div className="text-xl text-white">
-            <Loader2 className="mb-3 h-8 w-full animate-spin" />
-            이미지 업로드 중...
-          </div>
-        </div>
-      )}
     </main>
   );
 };

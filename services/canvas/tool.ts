@@ -21,16 +21,16 @@ export interface GeneratingImageForm {
   imageId: string;
   designStyle:
     | "none"
-    | "line-art-style"
-    | "vintage-style"
-    | "graffiti-style"
-    | "pop-art-style"
-    | "geometric-style"
-    | "hand-drawn-style"
-    | "3D-style"
-    | "collage-style"
-    | "watercolor-style"
-    | "sticker-style";
+    | "line-art"
+    | "vintage"
+    | "graffiti"
+    | "pop-art"
+    | "geometric"
+    | "hand-drawn"
+    | "3D"
+    | "collage"
+    | "watercolor"
+    | "sticker";
   prompt: string;
 }
 

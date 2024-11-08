@@ -44,51 +44,61 @@ import {
 const MerriweatherFont = Merriweather({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 const PoppinsFont = Poppins({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 const BungeeFont = Bungee({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 const BungeeInlineFont = Bungee_Inline({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 const BungeeOutlineFont = Bungee_Outline({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 const BungeeShadeFont = Bungee_Shade({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 // const BungeeSpiceFont = Bungee_Spice({
 //   subsets: ["latin"],
 //   weight: "400",
+// display: 'swap',
 // });
 
 const AntonFont = Anton({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 const PermanentMarkerFont = Permanent_Marker({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 const LobsterFont = Lobster({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 const OswaldFont = Oswald({
@@ -98,6 +108,7 @@ const OswaldFont = Oswald({
 const PacificoFont = Pacifico({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 const RalewayFont = Raleway({
@@ -107,16 +118,19 @@ const RalewayFont = Raleway({
 const ChewyFont = Chewy({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 const ShadowsIntoLightTwoFont = Shadows_Into_Light_Two({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 const AbrilFatfaceFont = Abril_Fatface({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 const FredokaFont = Fredoka({
@@ -130,6 +144,7 @@ const PlayfairDisplayFont = Playfair_Display({
 const AlfaSlabOneFont = Alfa_Slab_One({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 const CaveatFont = Caveat({
@@ -139,101 +154,121 @@ const CaveatFont = Caveat({
 const PressStart2PFont = Press_Start_2P({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 const UnicaOneFont = Unica_One({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 const DeliusFont = Delius({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 const FrederickaTheGreatFont = Fredericka_the_Great({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 const MonotonFont = Monoton({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 const RubikMonoOneFont = Rubik_Mono_One({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 const RubikBubblesFont = Rubik_Bubbles({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 const RubikDirtFont = Rubik_Dirt({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 const RubikGlitchFont = Rubik_Glitch({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 // const RubikGlitchPopFont = Rubik_Glitch_Pop({
 //   subsets: ["latin"],
 //   weight: "400",
+// display: 'swap',
 // });
 
 // const RubikScribbleFont = Rubik_Scribble({
 //   subsets: ["latin"],
 //   weight: "400",
+// display: 'swap',
 // });
 
 // const RubikDoodleShadowFont = Rubik_Doodle_Shadow({
 //   subsets: ["latin"],
 //   weight: "400",
+// display: 'swap',
 // });
 
 const RubikIsoFont = Rubik_Iso({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 const RubikWetPaintFont = Rubik_Wet_Paint({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 const RubikVinylFont = Rubik_Vinyl({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 const Rubik80sFadeFont = Rubik_80s_Fade({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 const RubikPuddlesFont = Rubik_Puddles({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 const RubikBurnedFont = Rubik_Burned({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 const ZillaSlabFont = Zilla_Slab({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 const ZillaSlabHighlightFont = Zilla_Slab_Highlight({
   subsets: ["latin"],
   weight: "400",
+  display: "swap",
 });
 
 export const fonts = {

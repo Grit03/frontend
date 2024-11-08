@@ -61,8 +61,7 @@ export default function FontPicker({ layer }: FontPickerProps) {
         </SelectContent>
       </Select>
 
-      {/* 폰트 weight */}
-      <Select>
+      {/* <Select>
         <SelectTrigger className="w-1/3">
           <SelectValue />
         </SelectTrigger>
@@ -71,7 +70,7 @@ export default function FontPicker({ layer }: FontPickerProps) {
           <SelectItem value="dark">Dark</SelectItem>
           <SelectItem value="system">System</SelectItem>
         </SelectContent>
-      </Select>
+      </Select> */}
     </div>
   );
 }

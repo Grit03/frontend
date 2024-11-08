@@ -8,11 +8,11 @@ export const navigation = [
     text: "내 디자인",
     href: "/dashboard",
   },
-  {
-    icon: <FaClipboardList />,
-    text: "주문 내역",
-    href: "/dashboard/invoice",
-  },
+  // {
+  //   icon: <FaClipboardList />,
+  //   text: "주문 내역",
+  //   href: "/dashboard/invoice",
+  // },
   {
     icon: <IoIosSettings />,
     text: "내 정보",

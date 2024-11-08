@@ -9,11 +9,12 @@ import { AiImage } from "./ai-image";
 
 interface LayerPreviewProps {
   id: string;
-  onLayerPointerDown: (e: React.PointerEvent, layerId: string) => void;
+  onLayerPointerDown?: (e: React.PointerEvent, layerId: string) => void;
+  ratio?: number;
 }
 
 export const LayerPreview = memo(
-  ({ id, onLayerPointerDown }: LayerPreviewProps) => {
+  ({ id, onLayerPointerDown, ratio }: LayerPreviewProps) => {
     const layer = useStorage((root) => root.layers.get(id));
 
     if (!layer) {
@@ -24,18 +25,29 @@ export const LayerPreview = memo(
       case LayerType.Image:
         return (
           <ImageRectangle
+            ratio={ratio}
             id={id}
             layer={layer}
-            onPointerDown={onLayerPointerDown}
+            onPointerDown={onLayerPointerDown ? onLayerPointerDown : () => {}}
           />
         );
       case LayerType.AiImage:
         return (
-          <AiImage id={id} layer={layer} onPointerDown={onLayerPointerDown} />
+          <AiImage
+            ratio={ratio}
+            id={id}
+            layer={layer}
+            onPointerDown={onLayerPointerDown ? onLayerPointerDown : () => {}}
+          />
         );
       case LayerType.Text:
         return (
-          <Text id={id} layer={layer} onPointerDown={onLayerPointerDown} />
+          <Text
+            // ratio={ratio}
+            id={id}
+            layer={layer}
+            onPointerDown={onLayerPointerDown ? onLayerPointerDown : () => {}}
+          />
         );
       default:
         console.log("잘못된 디자인 요소입니다");

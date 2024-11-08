@@ -14,7 +14,7 @@ import axios from "axios";
 interface RoomProps {
   children: ReactNode;
   roomId: string;
-  fallback: ReactNode;
+  fallback?: ReactNode;
 }
 
 export function Room({ children, roomId, fallback }: RoomProps) {

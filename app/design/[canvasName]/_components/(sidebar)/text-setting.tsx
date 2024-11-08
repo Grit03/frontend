@@ -13,7 +13,7 @@ export default function TextSetting({ layer }: TextSettingProps) {
       {/* 폰트 및 크기 변경 */}
       <div className="flex flex-col space-y-5">
         <div>
-          <div className="mb-3.5 font-medium leading-none">폰트 및 크기</div>
+          <div className="mb-3.5 font-medium leading-none">폰트 종류</div>
           <FontPicker layer={layer} />
         </div>
         <div>
