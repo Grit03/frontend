@@ -107,7 +107,7 @@ const styleList = [
     description: "손으로 그린 듯한 그림을 연상하는 디자인을 생성합니다",
   },
   {
-    type: "3D",
+    type: "three-d",
     name: "3D",
     value: "3D",
     description:
