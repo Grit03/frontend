@@ -199,6 +199,9 @@ export default function AiSetting({ setCanvasState }: AiSettingProps) {
 
   const onRecommeding: MouseEventHandler<HTMLButtonElement> = async (e) => {
     e.preventDefault();
+    if (!prompt) {
+      return toast.error("프롬프트를 입력해주세요");
+    }
     try {
       setIsRecommending(true);
       setRecommendedPrompts(null);
@@ -297,17 +300,17 @@ export default function AiSetting({ setCanvasState }: AiSettingProps) {
           {recommendedPrompts && (
             <div className="flex grow flex-col gap-2 rounded-lg border border-indigo-500/20 p-3">
               {recommendedPrompts.map((prompt) => (
-                <Button
+                <button
                   onClick={(e) => {
                     e.preventDefault();
                     setHtml(prompt);
                     setValue("prompt", prompt);
                   }}
-                  variant="outline"
-                  className="justify-start font-normal"
+                  disabled={isGenerating || isRecommending}
+                  className="text-balance break-words rounded-md border border-input bg-background px-4 py-2 text-left text-sm shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
                 >
                   {prompt}
-                </Button>
+                </button>
               ))}
             </div>
           )}
