@@ -1,5 +1,13 @@
 "use client";
-import { Dispatch, SetStateAction } from "react";
+import {
+  Dispatch,
+  FormEventHandler,
+  MouseEventHandler,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,6 +19,7 @@ import { GiCardRandom } from "react-icons/gi";
 import {
   GeneratingImageForm,
   postGeneratingImage,
+  postRecommedingPrompt,
 } from "@/services/canvas/tool";
 import { usePathname } from "next/navigation";
 import { useCookies } from "react-cookie";
@@ -27,6 +36,7 @@ import { nanoid } from "nanoid";
 import { useMutation } from "@liveblocks/react";
 import { LiveObject } from "@liveblocks/client";
 import { toast } from "sonner";
+import ContentEditable from "react-contenteditable";
 
 export interface PromptInputs {
   designStyle:
@@ -134,10 +144,18 @@ export default function AiSetting({ setCanvasState }: AiSettingProps) {
   const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
   const { isGenerating, setIsGenerating, setLayerId, clearLayerId, setImgSrc } =
     useIsGeneratingStore();
+  const [isRecommending, setIsRecommending] = useState<boolean>(false);
+  const [recommendedPrompts, setRecommendedPrompts] = useState<string[] | null>(
+    null,
+  );
+
+  const customTextareaRef = useRef<HTMLDivElement>(null);
+
   const {
     register,
     control,
     handleSubmit,
+    setValue,
     watch,
     formState: { errors },
   } = useForm<PromptInputs>({
@@ -145,6 +163,8 @@ export default function AiSetting({ setCanvasState }: AiSettingProps) {
       designStyle: "none",
     },
   });
+
+  const prompt = watch("prompt");
 
   const pathname = usePathname();
 
@@ -177,10 +197,42 @@ export default function AiSetting({ setCanvasState }: AiSettingProps) {
     }
   };
 
+  const onRecommeding: MouseEventHandler<HTMLButtonElement> = async (e) => {
+    e.preventDefault();
+    try {
+      setIsRecommending(true);
+      setRecommendedPrompts(null);
+      const prompts = await postRecommedingPrompt(
+        { prompt },
+        cookies.accessToken,
+      );
+      setRecommendedPrompts(prompts);
+    } catch (error) {
+      toast.error("프롬프트 추천에 문제가 생겼습니다");
+    } finally {
+      setIsRecommending(false);
+    }
+  };
+
+  const [html, setHtml] = useState("");
+
+  useEffect(() => {
+    if (recommendedPrompts && recommendedPrompts.length > 0) {
+      setHtml(
+        `<span class="relative group bg-indigo-600 px-2 py-1 rounded-lg text-sm text-white mx-1 mb-1">${prompt}</span>`,
+      );
+    }
+  }, [recommendedPrompts]);
+
   return (
     <>
-      <div className="py-4 text-xl font-semibold">AI 디자인 생성</div>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <div className="sticky inset-0 top-0 z-10 bg-white px-6 py-5 text-xl font-semibold">
+        AI 디자인 생성
+      </div>
+      <form
+        className="flex grow flex-col px-6 py-1.5"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         {/* 스타일 선택 창 */}
         <div className="flex flex-col">
           <div className="mb-3.5 font-medium leading-none">
@@ -197,32 +249,68 @@ export default function AiSetting({ setCanvasState }: AiSettingProps) {
         </div>
 
         {/* 프롬프트 입력 창 */}
-        <div className="grid w-full gap-1">
-          <Label htmlFor="prompt" className="text-base">
+        <div className="flex grow flex-col pb-5">
+          <Label htmlFor="prompt" className="mb-2 text-base">
             프롬프트
           </Label>
 
-          <Textarea
-            placeholder="만들고 싶은 티셔츠 디자인을 설명해보세요."
-            id="prompt"
-            rows={5}
-            className="mb-2 resize-none focus-visible:border-indigo-600 focus-visible:ring-indigo-600"
-            {...register("prompt", { required: true })}
-            disabled={isGenerating}
+          <Controller
+            control={control}
+            name="prompt"
+            render={({ field }) => (
+              <ContentEditable
+                className="mb-2 h-[100px] overflow-y-auto break-all rounded-lg border p-2 text-sm text-zinc-800 outline-none focus:border-2 focus:border-indigo-600 focus:ring-indigo-600"
+                tagName="div"
+                html={html} // innerHTML of the editable div
+                disabled={field.disabled} // use true to disable edition
+                onChange={(e) => {
+                  setRecommendedPrompts(null);
+                  setHtml(e.currentTarget.innerText);
+                  field.onChange(e.currentTarget.innerText);
+                }} // handle innerHTML change
+                onBlur={field.onBlur}
+              />
+            )}
           />
-          <Button type="submit" variant="action" disabled={isGenerating}>
+
+          <Button
+            type="submit"
+            variant="action"
+            disabled={isGenerating || isRecommending}
+          >
             {isGenerating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             <span className="mr-2">생성하기</span>
             <WandSparkles className="w-4" />
           </Button>
           <Button
             variant="designActive"
-            className="mt-2"
-            disabled={isGenerating}
+            className="my-2"
+            disabled={isGenerating || isRecommending}
+            onClick={onRecommeding}
           >
+            {isRecommending && (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            )}
             <span className="mr-2">프롬프트 추천</span>
             <WandSparkles className="w-4" />
           </Button>
+          {recommendedPrompts && (
+            <div className="flex grow flex-col gap-2 rounded-lg border border-indigo-500/20 p-3">
+              {recommendedPrompts.map((prompt) => (
+                <Button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setHtml(prompt);
+                    setValue("prompt", prompt);
+                  }}
+                  variant="outline"
+                  className="justify-start font-normal"
+                >
+                  {prompt}
+                </Button>
+              ))}
+            </div>
+          )}
         </div>
       </form>
     </>

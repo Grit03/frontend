@@ -31,7 +31,7 @@ export default function FontPicker({ layer }: FontPickerProps) {
   }, []);
 
   return (
-    <div className="flex w-full gap-2">
+    <div className="flex w-full gap-2 px-6 py-1.5">
       {/* 폰트 종류 */}
       <Select
         onValueChange={(value) => {

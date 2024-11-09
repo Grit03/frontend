@@ -8,7 +8,7 @@ interface TextSettingProps {
 
 export default function TextSetting({ layer }: TextSettingProps) {
   return (
-    <>
+    <div className="px-6 py-1.5">
       <div className="py-4 text-xl font-semibold">텍스트 편집</div>
       {/* 폰트 및 크기 변경 */}
       <div className="flex flex-col space-y-5">
@@ -21,6 +21,6 @@ export default function TextSetting({ layer }: TextSettingProps) {
           <ColorPicker layer={layer} />
         </div>
       </div>
-    </>
+    </div>
   );
 }

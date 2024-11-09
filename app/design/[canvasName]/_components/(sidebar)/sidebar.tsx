@@ -47,7 +47,7 @@ function SideBarWrapper({ isClosed, children }: SideBarWrapperProps) {
   return (
     <div
       className={cn(
-        "absolute bottom-2 right-2 top-2 w-[320px] rounded-md bg-white px-6 py-1.5 shadow-md transition",
+        "absolute bottom-2 right-2 top-2 h-full w-[320px] overflow-y-auto rounded-md bg-white shadow-md transition",
         isClosed && "-right-[100%]",
       )}
     >

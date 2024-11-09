@@ -34,6 +34,10 @@ export interface GeneratingImageForm {
   prompt: string;
 }
 
+interface PromptRecommendForm {
+  prompt: string;
+}
+
 // 이미지 추가
 export const postUploadImage = async (
   formData: FormData,
@@ -89,6 +93,23 @@ export const postGeneratingImage = async (
 ): Promise<ImageResponse> => {
   const { data } = await axiosInstance.post<ImageResponse>(
     "/image/generate",
+    formData,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+  return data;
+};
+
+// 프롬프트 추천
+export const postRecommedingPrompt = async (
+  formData: PromptRecommendForm,
+  accessToken: string,
+): Promise<string[]> => {
+  const { data } = await axiosInstance.post<string[]>(
+    "/image/recommend-prompt",
     formData,
     {
       headers: {
