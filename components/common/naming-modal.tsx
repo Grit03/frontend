@@ -119,6 +119,9 @@ export default function NamingModal({
     }
   };
 
+   const canvasNameRegex = /^[a-zA-Z0-9가-힣!@#$%^&*()?_~]{1,16}$/;
+
+
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -129,12 +132,22 @@ export default function NamingModal({
         </DialogHeader>
 
         <Input
-          {...register("clothesName", { required: true })}
+          {...register("clothesName", {
+            required: "캔버스 이름을 입력해주세요",
+            maxLength: {
+              value: 16,
+              message: "16자 이하로 입력해주세요",
+            },
+            pattern: {
+              value: canvasNameRegex,
+              message: "영어 대소문자, 숫자, 한글, 특수문자로 구성헤주세요",
+            },
+          })}
           className="focus-visible:border-indigo-600 focus-visible:ring-indigo-600"
         />
         {errors.clothesName && (
           <div className="my-1 text-xs text-rose-600">
-            디자인 캔버스 이름을 입력하세요
+            {errors.clothesName.message}
           </div>
         )}
         <DialogFooter>

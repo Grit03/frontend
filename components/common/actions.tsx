@@ -50,7 +50,7 @@ export const Actions = ({
           <Link2 className="mr-2 h-4 w-4" />
           디자인 링크 복사
         </DropdownMenuItem>
-        <ConfirmModal
+        {/* <ConfirmModal
           header="디자인을 삭제하시겠습니까?"
           description="삭제하시면, 디자인과 디자인 안의 모든 요소들이 영구적으로 삭제됩니다."
           // disabled={pending}
@@ -66,7 +66,7 @@ export const Actions = ({
             <Trash2 className="mr-2 h-4 w-4" />
             티셔츠 캔버스 삭제
           </Button>
-        </ConfirmModal>
+        </ConfirmModal> */}
       </DropdownMenuContent>
     </DropdownMenu>
   );
