@@ -4,7 +4,7 @@
 <img width="500" alt="image (3)" src="https://github.com/user-attachments/assets/a8ecbf59-a27f-49ed-8da4-8f877e040016" />
 
 
-<br />프롬프트 작성방식을 개선하여, 이미지 생성 AI를 기반으로 <br />
+<br />프롬프트 작성방식을 개선하여, 이미지 생성 모델인 Stable Diffusion을 기반으로 <br />
 누구나 사용하기 쉬운 티셔츠 디자인 툴, Tindy를 개발하였습니다.
 
 
