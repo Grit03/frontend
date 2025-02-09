@@ -177,8 +177,4 @@ https://github.com/user-attachments/assets/65369c27-1f72-4afd-9232-10ff1003cbbc
 ### 핵심 기능별 시연 영상
 https://github.com/user-attachments/assets/d35797c7-f123-4152-bea7-5fa121f8de7e
 
-## 프로젝트 구조
-
-
-
 
